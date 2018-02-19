@@ -1,0 +1,30 @@
+#*================================C++========================================*\
+#      Create: 2018/02/10
+#      Creator: Huang Huakun
+#      File Name: OutputMessage/CmakeLists.txt
+#      Platform: windows
+#      Version: v1.0
+#
+#      Describe: the console OutputMessage, show the message.
+#
+#      Example:
+#
+#*===========================================================================*/
+
+#  The code's length should not exceed 80 characters.
+#  Every description for a code line should skip two characters.
+#  As you can, do not use the void function. A return code is welcome.
+
+#
+#    CopyRight:
+#
+
+project( CFDbeta )
+
+find_package( Qt5Widgets )
+
+set( CMAKE_AUTOMOC ON )
+
+
+add_library( OuputMessage SHARED OutputMessage.cpp OutputMessage.h )
+target_link_libraries( OuputMessage Qt5::Widgets Qt5::Core Qt5::Gui )
