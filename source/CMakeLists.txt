@@ -27,12 +27,11 @@ set( CMAKE_AUTOUIC ON )
 set( CMAKE_AUTORCC ON )
 
 find_package( Qt5Widgets REQUIRED)
-find_package( VTK REQUIRED )
 find_package( ParaView REQUIRED )
 include( ${PARAVIEW_USE_FILE} )
 
 # include rules for creating custom applications
-include( ParaViewBranding )
+include(ParaViewBranding)
 
 # Set a consistent MACOSX_RPATH default across all CMake versions.
 # When CMake 2.8.12 is required, change this default to 1.
@@ -46,12 +45,14 @@ INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_BINARY_DIR})
 
 FILE( GLOB HEADER_FILES
-           CFDbeta.h
-           CFDMainWindow/dir.h
+       CFDbeta.h
+	   QVTKView.h
+       CFDMainWindow/dir.h
+	   CFDMainWindow/FileOpen.h
+	   CFDMainWindow/TabWidget.h
 	   CFDMainWindow/initwindow/initwindow.h
 	   OutputMessage/OutputMessage.h
 	   CFDMainWindow/initwindow/configuration.h
-	   CFDMainWindow/QVTKView.h
 	   Editor/codeeditor.h
 	   Editor/config.h
 	   Editor/gotolinedialog.h
@@ -60,20 +61,22 @@ FILE( GLOB HEADER_FILES
 	   Editor/searchdialog.h
 	   Editor/textview.h
 	   Editor/EditorAction.h
-           Core/myui.h
-           Core/mytoolbar.h
-           Core/qmenuButton.h
+       Core/myui.h
+       Core/mytoolbar.h
+       Core/qmenuButton.h
 	)
 FILE( GLOB SOURCE_FILES
-           main.cpp
-           CFDbeta.cpp
+       CFDbeta.cpp
+	   QVTKView.cpp
+	   CFDMainWindow/FileOpen.cpp
+	   CFDMainWindow/TabWidget.cpp
 	   CFDMainWindow/initwindow/initwindow.cpp
 	   CFDMainWindow/initwindow/stringToChange.cpp
 	   CFDMainWindow/initwindow/initConsole.cpp
 	   CFDMainWindow/initwindow/configuration.cpp
-           CFDMainWindow/initwindow/initMainWindowAction.cpp
+       CFDMainWindow/initwindow/initMainWindowAction.cpp
 	   OutputMessage/OutputMessage.cpp
-	   CFDMainWindow/QVTKView.cpp
+	   
 	   Editor/codeedit.cpp
 	   Editor/config.cpp
 	   Editor/gotolinedialog.cpp
@@ -82,18 +85,18 @@ FILE( GLOB SOURCE_FILES
 	   Editor/searchdialog.cpp
 	   Editor/textview.cpp
 	   Editor/EditorAction.cpp
-           Core/myui.cpp
-           Core/mytoolbar.cpp
-           Core/qmenuButton.cpp
+       Core/myui.cpp
+       Core/mytoolbar.cpp
+       Core/qmenuButton.cpp
            
     )
 FILE( GLOB UI_FILES
-          CFDbeta.ui
+      CFDbeta.ui
 	  CFDMainWindow/initwindow/configuration.ui
 	  Editor/gotolinedialog.ui
 	  Editor/perferencedialog.ui
 	  Editor/searchdialog.ui
-          Core/myui.ui
+      Core/myui.ui
 	 )
 	 
 FILE( GLOB initwindow
@@ -103,7 +106,7 @@ FILE( GLOB initwindow
 	 CFDMainWindow/initwindow/initConsole.cpp
 	 CFDMainWindow/initwindow/configuration.cpp
 	 CFDMainWindow/initwindow/configuration.h
-         CFDMainWindow/initwindow/initMainWindowAction.cpp
+     CFDMainWindow/initwindow/initMainWindowAction.cpp
 	)
 FILE( GLOB OutputMessage
      OutputMessage/OutputMessage.h 
@@ -135,7 +138,7 @@ FILE( GLOB Core
       Core/qmenuButton.h
       Core/qmenuButton.cpp
      )
-include( ${VTK_USE_FILE})
+
 qt5_wrap_ui( uic ${UI_FILES} )	
 qt5_wrap_cpp( moc ${SOURCE_FILES} )
 qt5_add_resources( res images.qrc )
@@ -146,6 +149,22 @@ source_group( "UI" FILES ${UI_FILES} )
 source_group( "Editor" FILES ${Editor} )
 source_group( "Core" FILES ${Core} )
 
-add_executable( FlowCD ${SOURCE_FILES} ${HEADER_FILES} ${UI_FILES} images.qrc )
+build_paraview_client( FlowCD 
+      TITLE "FlowCD"
+	  ORGANIZATION "Test"
+	  VERSION_MAJOR 1
+	  VERSION_MINOR 1
+	  VERSION_PATCH 1
+	  PVMAIN_WINDOW MainWindow
+	  PVMAIN_WINDOW_INCLUDE CFDbeta.h
+	  GUI_CONFIGURATION_XMLS
+	    ${CMAKE_CURRENT_SOURCE_DIR}/ParaViewSources.xml
+	    ${CMAKE_CURRENT_SOURCE_DIR}/ParaViewFilters.xml
+	  SOURCES ${SOURCE_FILES} ${HEADER_FILES} ${UI_FILES} images.qrc 
+)
+# set the target properties for the project. Do not edit this line
+# use the console to launch our soft
+SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:CONSOLE") 
 target_link_libraries( FlowCD Qt5::Widgets Qt5::Core Qt5::Gui )  
-target_link_libraries( FlowCD ${VTK_LIBRARIES} )                                                      
+target_link_libraries( FlowCD ${VTK_LIBRARIES} )    
+                                                 

@@ -44,7 +44,6 @@ int MainWindow:: initConsoleWindow( )
 	SetConsoleWindowInfo(hOut, TRUE, &rc);
         //  forbiddon the input fuction
 	system( "Chcp 437");
-	system( "cls" );
 #endif 
 	//  the soft information shows
 	printf( "CFDbeta is a free soft. And this version is tesing\n\n");

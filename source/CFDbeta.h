@@ -43,13 +43,22 @@
 #include <QLineEdit>
 #include <QFileDialog> 
 #include <QFileSystemWatcher>
-#include <qmenu.h>
+#include <QMenu>
+#include <QToolBar>
 
 #include "initwindow.h"
 #include "OutputMessage.h"
 #include "configuration.h"
-#include "CFDMainWindow/QVTKView.h"
+#include "QVTKView.h"
 #include "myui.h"
+
+#include "pqLoadDataReaction.h"
+#include "pqActiveObjects.h"
+#include "pqParaViewBehaviors.h"
+#include "pqParaViewMenuBuilders.h"
+#include "pqHelpReaction.h"
+#include "CFDMainWindow/FileOpen.h"
+#include "TabWidget.h"
 
 using namespace std ;
 
@@ -60,9 +69,9 @@ namespace Ui {
 class MainWindow : public QMainWindow
 {
 	Q_OBJECT
-
+    typedef QMainWindow Superclass;
 public:
-	explicit MainWindow(QWidget *parent = 0);
+	explicit MainWindow(QWidget *parent=0 );
 	~MainWindow();
 	int RunningPlatForm;
 
@@ -77,19 +86,25 @@ public:
 	
 	//  the editor outter path
 	char Notepad[ 200 ];
-
+	TabWidget *EditorTab;
 	myUI *editorUI;
 	Config *conf;
 	QPushButton *CFD;
 	QPushButton *editor;
-        QToolBar  *editorToolBar;
+    QToolBar  *editorToolBar;
 	QPushButton *Mesh;
+
+	//  menu function and trigger
+	FileOpen buildFileOpenTigger;
 	
 //  CFDbeta.cpp fuction
         
 		//  init the tabWindget and QVTKWidget
 		int initTabAndQVTKWidget( ) ;
 		void RunnCommand(int mark, QString run, int CommandType );
+		void initTheQVTKWindow();
+		void InitTheMainWindow();
+		void DockWidgetAndToolBarState();
 		
 	
 //  dir.h function
@@ -106,22 +121,27 @@ public:
 		void setUpDir( ) ;
 
 		//  rename mark
-		int RenameDir;
-		QString OldFileName;
-		QStandardItemModel *model;
-		QStandardItem **item;
-		QMenu *TreeViewMenu;
-		QAction *OpenFileOuterAction;
-		QTextBrowser *textBrowser;
-                QToolBar *Program;
-                QAction *main;
-                QAction *FindFile;
+	   int RenameDir;
+	   QString OldFileName;
+	   QStandardItemModel *model;
+	   QStandardItem **item;
+	   QMenu *TreeViewMenu;
+	   QAction *OpenFileOuterAction;
+	   QTextBrowser *textBrowser;
+       QToolBar *Program;
+       QAction *main;
+       QAction *FindFile;
+
+	   //  FileMenu
                 
 //  EditorToolBar
        QAction *save ;
        QAction *newfile;
 //  mainToolBar
+	   QToolBar *mainToolBar;
        QAction *blockMesh;
+//  editor widget
+	   QTabWidget *tabEditor;
 		
 //  CFDMainWindow/initWindow/initConsole.cpp function
 
@@ -153,13 +173,15 @@ private slots:
 	  void ShowTreeView();
 	  void ShowTextBrowser();
 	  void BlockMeshTrriger();
+	  void OpenFileImageTrigger();
+	  void OpenFileEditorTrigger();
+	  void showHelpForProxy(const QString& groupname,const QString& proxyname);
 
 private:
+	Q_DISABLE_COPY(MainWindow)
 	Ui::MainWindow *ui;
 	int textBrowserMark;
-	
-
-	
+	pqLoadDataReaction *Loadata;
 };
 
 #endif //CFDBETA_H

@@ -27,45 +27,46 @@
 #include <QFontDialog>
 #include "CFDMainWindow/dir.h"
 #include <qgridlayout.h>
+#include "QSplitter"
 
 #ifdef WIN32
 #include <windows.h>
 #endif
 
-#include "vtkRenderWindow.h"
-#include "vtkRenderWindowInteractor.h"
+#include "pqMainControlsToolbar.h"
 
-#include "vtkRenderer.h"
-
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+MainWindow::MainWindow( QWidget *parent ) :QMainWindow(parent),
+   ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 	
     //  define the platform
     RunningPlatForm = WINDOWRUNNING;
     initMainWindowAction( ) ;  
-	HWND hwnd = FindWindow(NULL, "hhk@DESKTOP-6J4HNPQ: /mnt/c/Users/hhk/Desktop");
-	if (hwnd == NULL) std::cout << "failed";
-	else SendMessage(hwnd, WM_PASTE, 0, 0);
+
     //  init the QVTK widget and tabWidget
     initTabAndQVTKWidget( ) ;
     setUpDir();
-    QVTKWidget *qvtkWidget;
-    qvtkWidget = new QVTKWidget;
     ui->statusBar->addWidget(labelStatusBar); 
-    ui->tabWidget->removeTab( 0 );
-    ui->tabWidget->addTab(qvtkWidget, "model");
-    vtkView.ShowModel( qvtkWidget ) ;
+
    
     connect( ui->lineCommand,SIGNAL( returnPressed() ), 
              this, SLOT( LineEditRun( ) ) );
+	
 	textBrowser = new QTextBrowser;
-	conf = new Config;
-	editorUI = new myUI(conf, ui->tabWidget, ui->treeView, textBrowser,
-		&initWin);
+	EditorTab = new TabWidget;
+	tabEditor = ui->EditorManager->EditorWidget;
+	tabEditor->setTabsClosable(true);
+	//ui->EditorLayout->setMargin(0);
+	//ui->EditorLayout->setSpacing(0);
+	//ui->EditorLayout->addWidget(tabEditor);
+	//DockManager->hide();
+	//tabEditor->hide();
 
+
+	conf = new Config;
+	editorUI = new myUI(conf, tabEditor, ui->treeView, textBrowser,
+		&initWin);
      //  add the frame for the group and program widget
      ui->FolderWindow->setStyleSheet( "border: 1px solid black;" );
      ui->treeView->setStyleSheet("border-bottom:0px ; border-top: 0px;");
@@ -73,6 +74,14 @@ MainWindow::MainWindow(QWidget *parent) :
      ui->groupBox->setStyleSheet("border-bottom: 0px; border-right: 0px;\
                                   border-left: 0px;");
      textBrowser->setStyleSheet("border-top: 0px; border-bottom: 0px;" );
+
+	 //  add the blockMesh to the mainToolBar
+	 mainToolBar = new QToolBar;
+	 blockMesh = new QAction("blockMesh", mainToolBar);
+	 blockMesh->setIcon(QIcon(":/Resource/512_512/grid.png"));
+	 mainToolBar->addAction(blockMesh);
+	 //  add the ToolBar
+	 addToolBar(mainToolBar);
 
      //  add the toolbar to the CurrentFolderGroup
      Program = new QToolBar ;
@@ -101,15 +110,19 @@ MainWindow::MainWindow(QWidget *parent) :
      //  add the editor toolbar to the mainwindow
      addToolBar( editorToolBar ) ;
       
-     //  add the blockMesh to the mainToolBar
+
+	 //  The File Menu
+	 connect(ui->Image_FIle, SIGNAL(triggered()), this, SLOT(OpenFileImageTrigger()));
+	 connect(ui->Editor_File, SIGNAL(triggered()), this, SLOT(OpenFileEditorTrigger()));
+	
+	 vtkView.buildRecentFilesMenu( *ui->menuRecents);
 	 
-     blockMesh = new QAction( "blockMesh", ui->mainToolBar) ;
-     blockMesh->setIcon( QIcon(":/Resource/512_512/grid.png" )) ;
-     ui->mainToolBar->addAction( blockMesh ) ;
-     
 	 //  the toolbar ui
-	 ui->mainToolBar->setStyleSheet("background-color:rgb(240, 240, 240);");
+	 mainToolBar->setStyleSheet("background-color:rgb(240, 240, 240);");
 	 editorToolBar->setStyleSheet("background-color:rgb(240, 240, 240); ");
+	 
+	 //  set up the paraview client
+	 InitTheMainWindow( );
 
 	 textBrowserMark = 0;
 	 connect(ui->FolderView, SIGNAL(clicked()), this, SLOT(ShowTreeView()));
@@ -128,6 +141,7 @@ MainWindow::~MainWindow()
 	delete OpenFileOuterAction; delete item;
 	delete model; 
 	delete textBrowser;
+	delete tabEditor;
     //  delete the Program bar
     delete main;
     delete FindFile;
@@ -138,15 +152,16 @@ MainWindow::~MainWindow()
     delete editorToolBar;
     //  delete the mainToolBar
     delete blockMesh ;
+	delete mainToolBar;
         
 	
 }
 
 int MainWindow::initTabAndQVTKWidget( )
 {
-    ui->tabWidget->setMovable(true);
-    ui->tabWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    ui->tabWidget->setTabsClosable(true);
+    //tabEditor->setMovable(true);
+	//tabEditor->setContextMenuPolicy(Qt::CustomContextMenu);
+	//tabEditor->setTabsClosable(true);
 	return 1 ;
 }
 
@@ -263,5 +278,98 @@ void MainWindow::BlockMeshTrriger()
 	RunnCommand(LINUXRUNNING, "blockMesh", OPENFOAM_COMMAND);
 }
 
+void MainWindow::initTheQVTKWindow()
+{
+
+}
+void MainWindow::OpenFileImageTrigger()
+{
+	buildFileOpenTigger.loadData();
+	if (ui->MultiViewManager->isHidden())
+		ui->MultiViewManager->show();
+}
+void MainWindow::OpenFileEditorTrigger()
+{
+	QString FileName = buildFileOpenTigger.buildFileOpenTrigger();
+	QFileInfo FileInfo(FileName);
+	if (FileInfo.isFile())
+	{
+		editorUI->openFile(FileName);
+		if( tabEditor->isHidden())
+		    tabEditor->show();
+	}
+}
+
+void MainWindow::showHelpForProxy(const QString& groupname,
+	const QString& proxyname)
+{
+#ifdef PARAVIEW_USE_QTHELP
+	pqHelpReaction::showProxyHelp(groupname, proxyname);
+#endif
+}
+
+void MainWindow::InitTheMainWindow()
+{
+
+	// Set up the dock window corners to give the vertical docks more room.
+	this->setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
+	this->setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
+
+	ui->animationViewDock->hide();
+	ui->statisticsDock->hide();
+	ui->comparativePanelDock->hide();
+	this->tabifyDockWidget(ui->animationViewDock, ui->statisticsDock);
+	ui->pipelineBrowserDock->hide();
+	ui->proxyTabDock->hide();
+	ui->Boundary->hide();
+
+	// Enable help from the properties panel.
+	QObject::connect(ui->proxyTabWidget,
+		SIGNAL(helpRequested(const QString&, const QString&)), this,
+		SLOT(showHelpForProxy(const QString&, const QString&)));
+
+	// Populate application menus with actions.
+	// pqParaViewMenuBuilders::buildFileMenu( *ui->menuFIle_F);
+	pqParaViewMenuBuilders::buildEditMenu(*ui->menuParaView_Edit);
+
+	// Populate sources menu.
+	 pqParaViewMenuBuilders::buildSourcesMenu(*ui->menuSources, this);
+
+	// Populate filters menu.
+	pqParaViewMenuBuilders::buildFiltersMenu(*ui->menuFilters, this);
+
+	// Populate Tools menu.
+	pqParaViewMenuBuilders::buildToolsMenu(*ui->menuParaViewTools );
+
+	// setup the context menu for the pipeline browser.
+	pqParaViewMenuBuilders::buildPipelineBrowserContextMenu(*ui->pipelineBrowser);
+
+	//  setup the tools bar
+	vtkView.buildToolBars(*this);
+	//pqParaViewMenuBuilders::buildToolbars(*this);
+
+	// Setup the View menu. This must be setup after all toolbars and dockwidgets
+	// have been created.
+	pqParaViewMenuBuilders::buildViewMenu(*ui->menuView, *this);
+
+	// Setup the menu to show macros.
+	pqParaViewMenuBuilders::buildMacrosMenu(*ui->menuMacro);
+
+	// Setup the help menu.
+	pqParaViewMenuBuilders::buildHelpMenu(*ui->menuParaview);
+
+	// Final step, define application behaviors. Since we want all ParaView
+	// behaviors, we use this convenience method.
+	new pqParaViewBehaviors(this, this);
+}
+
+void MainWindow::DockWidgetAndToolBarState()
+{
+	//  the ToolBar state
+	if (tabEditor->isHidden())
+	{
+		//  I do not think about the right reaction
+	}
+}
 
 

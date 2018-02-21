@@ -119,52 +119,44 @@ myUI::~myUI()
 
 void myUI::fileClose(int index)
 {
-    QString str = tabWidget->tabText(tabWidget->currentIndex());
-    if( initWin->StringCompare( str.toLocal8Bit().data(), "model" )) ;
-    else
-    {
-        bool mark = maybeSave(index) ;
+	{
+		bool mark = maybeSave(index);
 #if _DEBUG
-        printf("\nThis a information for developer\n\n" );
-        printf("In myui.cpp, the fileClose maybeSave function\n" ) ;
-        printf("The close index = %d\n", index ) ;
-        printf("the files count = 1\n" );
-        if( mark )
-            printf("The bool value is 1\n\n" ) ;
-        else
-            printf("The bool value is 0\n\n" ) ;
-        printf("Debug Exit\n" ) ;
+		printf("\nThis a information for developer\n\n");
+		printf("In myui.cpp, the fileClose maybeSave function\n");
+		printf("The close index = %d\n", index);
+		printf("the files count = 1\n");
+		if (mark)
+			printf("The bool value is 1\n\n");
+		else
+			printf("The bool value is 0\n\n");
+		printf("Debug Exit\n");
 #endif
-        if (mark)
-        {
-            if (openedFiles.count() == 1)
-            {
+		if (mark)
+		{
+			if (openedFiles.count() == 1)
+			{
 #if _DEBUG
-                Output.fileCloseMaybeSaveMessage( index ) ;
+				Output.fileCloseMaybeSaveMessage(index);
 #endif
-                on_newFile_clicked();
-                openedFiles.removeAt(1);
-                tabWidget->removeTab(1);
-            }
-            else
-            {
+				on_newFile_clicked();
+				openedFiles.removeAt(0);
+				tabWidget->removeTab(0);
+			}
+			else
+			{
 #if _DEBUG
-                printf("\nThis ia a information for developer\n\n");
-                printf("In muui.cpp, the fileClose function\n" ) ;
-                printf("the close index =%d\n", index ) ;
-                printf("the files count =%d\n\n", openedFiles.count() ) ;
-                printf("Debug Exit\n" ) ;
+				printf("\nThis ia a information for developer\n\n");
+				printf("In muui.cpp, the fileClose function\n");
+				printf("the close index =%d\n", index);
+				printf("the files count =%d\n\n", openedFiles.count());
+				printf("Debug Exit\n");
 #endif
-                openedFiles.removeAt(index);
-                tabWidget->removeTab(index);
-            }
-        }
-        else
-        {
-             openedFiles.removeAt(index);
-             tabWidget->removeTab(index);
-        }
-    } 
+				openedFiles.removeAt(index);
+				tabWidget->removeTab(index);
+			}
+		}
+	}
 }
 
 //Tab发生改变时触发的槽
@@ -179,10 +171,7 @@ void myUI::currentChanged(int index)
             on_newFile_clicked();
         return;
     }
-    QString str = tabWidget->tabText(tabWidget->currentIndex());
-    if( initWin->StringCompare( str.toLocal8Bit().data(), "model" ));
-    else
-      updateActions();
+    updateActions();
 }
 
 //创建新的Tab（用于打开文件）
@@ -193,7 +182,7 @@ void myUI::newTab(const QString& fileName, QFile& file)
     tabWidget->addTab(text, QFileInfo(fileName).fileName());
     QByteArray data = file.readAll();
     text->setPlainText( QString::fromLocal8Bit(data) );
-    text->setFont(QFont( "宋体", 10));
+    text->setFont(QFont( "Helvetica", 10));
     tabWidget->setCurrentWidget(text);
 }
 

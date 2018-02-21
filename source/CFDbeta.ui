@@ -6,51 +6,61 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>858</width>
-    <height>526</height>
+    <width>868</width>
+    <height>554</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout_4">
+   <layout class="QGridLayout" name="gridLayout_10">
     <property name="leftMargin">
-     <number>2</number>
+     <number>0</number>
     </property>
     <property name="topMargin">
      <number>0</number>
     </property>
     <property name="rightMargin">
-     <number>2</number>
+     <number>0</number>
     </property>
     <property name="bottomMargin">
-     <number>2</number>
+     <number>0</number>
     </property>
-    <property name="spacing">
+    <property name="horizontalSpacing">
      <number>0</number>
     </property>
     <item row="0" column="0">
-     <layout class="QGridLayout" name="gridLayout">
-      <property name="spacing">
-       <number>0</number>
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
-      <item row="0" column="0">
-       <widget class="QTabWidget" name="tabWidget">
-        <property name="currentIndex">
+      <widget class="TabWidget" name="EditorManager" native="true">
+       <layout class="QGridLayout" name="gridLayout_9"/>
+      </widget>
+      <widget class="pqViewManager" name="MultiViewManager" native="true">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_7">
+        <property name="leftMargin">
          <number>0</number>
         </property>
-        <property name="tabsClosable">
-         <bool>false</bool>
+        <property name="topMargin">
+         <number>0</number>
         </property>
-        <widget class="QWidget" name="tab">
-         <attribute name="title">
-          <string>Tab 1</string>
-         </attribute>
-        </widget>
-       </widget>
-      </item>
-     </layout>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+       </layout>
+      </widget>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -59,39 +69,153 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>858</width>
+     <width>868</width>
      <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFIle_F">
     <property name="title">
-     <string>FIle(F)</string>
+     <string>FIle</string>
     </property>
+    <widget class="QMenu" name="menuOpen">
+     <property name="title">
+      <string>Open</string>
+     </property>
+     <addaction name="Image_FIle"/>
+     <addaction name="Editor_File"/>
+     <addaction name="Project"/>
+    </widget>
+    <widget class="QMenu" name="menuRecents">
+     <property name="title">
+      <string>Recent</string>
+     </property>
+     <addaction name="actionFiles"/>
+    </widget>
+    <addaction name="menuOpen"/>
+    <addaction name="menuRecents"/>
+    <addaction name="actionWrite"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionSave_as"/>
    </widget>
    <widget class="QMenu" name="menuMesh_M">
     <property name="title">
-     <string>Mesh(M)</string>
+     <string>Mesh</string>
     </property>
+    <addaction name="actionReadMesh"/>
+    <addaction name="actionCheck"/>
+    <addaction name="actionRefine"/>
+    <addaction name="actionCollapseEdges"/>
+    <addaction name="actionModify"/>
+    <addaction name="actionPDR"/>
+    <addaction name="actionRefineHex"/>
+    <addaction name="actionRefinementLevel"/>
+    <addaction name="actionRefineWallLayer"/>
+    <addaction name="actionRemoveFaces"/>
+    <addaction name="actionSelectCells"/>
+    <addaction name="actionSplitCells"/>
    </widget>
    <widget class="QMenu" name="menuSolve">
     <property name="title">
-     <string>Solve(S)</string>
+     <string>Solve</string>
+    </property>
+    <addaction name="actionModel"/>
+    <addaction name="actionBoundary"/>
+    <addaction name="actionInit_Condition"/>
+    <addaction name="actionTime_Control"/>
+    <addaction name="actionScheme_Control"/>
+    <addaction name="actionSolver_Control"/>
+    <addaction name="actionRun"/>
+   </widget>
+   <widget class="QMenu" name="menuPost">
+    <property name="title">
+     <string>Post</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <widget class="QMenu" name="menuParaview">
+     <property name="title">
+      <string>Paraview</string>
+     </property>
+     <addaction name="actionAboutPraView"/>
+    </widget>
+    <addaction name="actionUserGuide"/>
+    <addaction name="actionOurProject"/>
+    <addaction name="menuParaview"/>
+    <addaction name="actionAbout"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <widget class="QMenu" name="menuParaViewTools">
+     <property name="title">
+      <string>ParaViewTools</string>
+     </property>
+     <addaction name="actionTools"/>
+    </widget>
+    <addaction name="menuParaViewTools"/>
+    <addaction name="actionUser_Defined"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <widget class="QMenu" name="menuParaView_Edit">
+     <property name="title">
+      <string>ParaView Edit</string>
+     </property>
+     <addaction name="actionEdit"/>
+    </widget>
+    <addaction name="menuParaView_Edit"/>
+   </widget>
+   <widget class="QMenu" name="menuFilters">
+    <property name="title">
+     <string>Filters</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuSources">
+    <property name="title">
+     <string>Sources</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuMacro">
+    <property name="title">
+     <string>Macros</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuParallel">
+    <property name="title">
+     <string>Parallel</string>
     </property>
    </widget>
    <addaction name="menuFIle_F"/>
    <addaction name="menuMesh_M"/>
    <addaction name="menuSolve"/>
-  </widget>
-  <widget class="QToolBar" name="mainToolBar">
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
+   <addaction name="menuPost"/>
+   <addaction name="menuParallel"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuFilters"/>
+   <addaction name="menuSources"/>
+   <addaction name="menuMacro"/>
+   <addaction name="menuView"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="FolderWindow">
+   <property name="font">
+    <font>
+     <family>Times New Roman</family>
+    </font>
+   </property>
    <property name="styleSheet">
     <string notr="true"/>
    </property>
@@ -146,6 +270,11 @@
             <height>23</height>
            </size>
           </property>
+          <property name="font">
+           <font>
+            <family>Times New Roman</family>
+           </font>
+          </property>
           <property name="styleSheet">
            <string notr="true"/>
           </property>
@@ -171,6 +300,11 @@
             <height>23</height>
            </size>
           </property>
+          <property name="font">
+           <font>
+            <family>Times New Roman</family>
+           </font>
+          </property>
           <property name="text">
            <string>Output</string>
           </property>
@@ -192,6 +326,9 @@
            </property>
            <item row="0" column="0">
             <widget class="QTreeView" name="treeView">
+             <property name="editTriggers">
+              <set>QAbstractItemView::NoEditTriggers</set>
+             </property>
              <attribute name="headerVisible">
               <bool>false</bool>
              </attribute>
@@ -229,8 +366,328 @@
     </layout>
    </widget>
   </widget>
+  <widget class="QDockWidget" name="pipelineBrowserDock">
+   <property name="font">
+    <font>
+     <family>Times New Roman</family>
+    </font>
+   </property>
+   <property name="windowTitle">
+    <string>pipelineBrowser</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="pqPipelineBrowserWidget" name="pipelineBrowser">
+    <layout class="QGridLayout" name="gridLayout_4"/>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="proxyTabDock">
+   <property name="font">
+    <font>
+     <family>Times New Roman</family>
+    </font>
+   </property>
+   <property name="windowTitle">
+    <string>Properties</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="pqPropertiesPanel" name="proxyTabWidget"/>
+  </widget>
+  <widget class="QDockWidget" name="statisticsDock">
+   <property name="font">
+    <font>
+     <family>Times New Roman</family>
+    </font>
+   </property>
+   <property name="windowTitle">
+    <string>Statistics</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="pqDataInformationWidget" name="statisticsView"/>
+  </widget>
+  <widget class="QDockWidget" name="animationViewDock">
+   <property name="font">
+    <font>
+     <family>Times New Roman</family>
+    </font>
+   </property>
+   <property name="windowTitle">
+    <string>Animation View</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="pqPVAnimationWidget" name="animationView"/>
+  </widget>
+  <widget class="QDockWidget" name="comparativePanelDock">
+   <property name="font">
+    <font>
+     <family>Times New Roman</family>
+    </font>
+   </property>
+   <property name="windowTitle">
+    <string>Comparative View</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="pqComparativeVisPanel" name="comparativeVisPanel"/>
+  </widget>
+  <widget class="QDockWidget" name="Boundary">
+   <property name="font">
+    <font>
+     <family>Times New Roman</family>
+    </font>
+   </property>
+   <property name="windowTitle">
+    <string>Boundary</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_3">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <layout class="QGridLayout" name="gridLayout_6"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <action name="Image_FIle">
+   <property name="text">
+    <string>Image File</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="Editor_File">
+   <property name="text">
+    <string>Editor File</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="Project">
+   <property name="text">
+    <string>Project</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actionOp">
+   <property name="text">
+    <string>op</string>
+   </property>
+  </action>
+  <action name="actionWrite">
+   <property name="text">
+    <string>Write</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionSave_as">
+   <property name="text">
+    <string>Save as</string>
+   </property>
+  </action>
+  <action name="actionReadMesh">
+   <property name="text">
+    <string>Import</string>
+   </property>
+  </action>
+  <action name="actionCheck">
+   <property name="text">
+    <string>Check</string>
+   </property>
+  </action>
+  <action name="actionRefine">
+   <property name="text">
+    <string>autoRefine</string>
+   </property>
+  </action>
+  <action name="actionCollapseEdges">
+   <property name="text">
+    <string>collapseEdges</string>
+   </property>
+  </action>
+  <action name="actionModify">
+   <property name="text">
+    <string>Modify</string>
+   </property>
+  </action>
+  <action name="actionPDR">
+   <property name="text">
+    <string>PDR</string>
+   </property>
+  </action>
+  <action name="actionRefineHex">
+   <property name="text">
+    <string>RefineHex</string>
+   </property>
+  </action>
+  <action name="actionRefinementLevel">
+   <property name="text">
+    <string>RefinementLevel</string>
+   </property>
+  </action>
+  <action name="actionRefineWallLayer">
+   <property name="text">
+    <string>RefineWallLayer</string>
+   </property>
+  </action>
+  <action name="actionRemoveFaces">
+   <property name="text">
+    <string>RemoveFaces</string>
+   </property>
+  </action>
+  <action name="actionSelectCells">
+   <property name="text">
+    <string>SelectCells</string>
+   </property>
+  </action>
+  <action name="actionSplitCells">
+   <property name="text">
+    <string>SplitCells</string>
+   </property>
+  </action>
+  <action name="actionOperation_condition">
+   <property name="text">
+    <string>Operation condition</string>
+   </property>
+  </action>
+  <action name="actionModel">
+   <property name="text">
+    <string>Model</string>
+   </property>
+  </action>
+  <action name="actionBoundary">
+   <property name="text">
+    <string>Boundary</string>
+   </property>
+  </action>
+  <action name="actionInit_Condition">
+   <property name="text">
+    <string>Init Condition</string>
+   </property>
+  </action>
+  <action name="actionTime_Control">
+   <property name="text">
+    <string>Time Control</string>
+   </property>
+  </action>
+  <action name="actionRun">
+   <property name="text">
+    <string>Run</string>
+   </property>
+  </action>
+  <action name="actionScheme_Control">
+   <property name="text">
+    <string>Scheme Control</string>
+   </property>
+  </action>
+  <action name="actionSolver_Control">
+   <property name="text">
+    <string>Solver Control</string>
+   </property>
+  </action>
+  <action name="actionFiles">
+   <property name="text">
+    <string>Files</string>
+   </property>
+  </action>
+  <action name="actionAboutPraView">
+   <property name="text">
+    <string>aboutPraView</string>
+   </property>
+  </action>
+  <action name="actionOurProject">
+   <property name="text">
+    <string>OurProject</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About..</string>
+   </property>
+  </action>
+  <action name="actionUserGuide">
+   <property name="text">
+    <string>User Guide</string>
+   </property>
+  </action>
+  <action name="actionUser_Defined">
+   <property name="text">
+    <string>User Defined</string>
+   </property>
+  </action>
+  <action name="actionTools">
+   <property name="text">
+    <string>Tools</string>
+   </property>
+  </action>
+  <action name="actionEdit">
+   <property name="text">
+    <string>Edit</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>pqViewManager</class>
+   <extends>QWidget</extends>
+   <header>pqViewManager.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>pqPipelineBrowserWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">pqPipelineBrowserWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>pqPropertiesPanel</class>
+   <extends>QWidget</extends>
+   <header location="global">pqPropertiespanel.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>pqDataInformationWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">pqDataInformationWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>pqPVAnimationWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">pqPVAnimationWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>pqComparativeVisPanel</class>
+   <extends>QWidget</extends>
+   <header location="global">pqComparativeVisPanel.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TabWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">CFDMainWindow/TabWidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

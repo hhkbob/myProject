@@ -25,6 +25,17 @@
 
 #include "QVTKWidget.h"
 #include "QMainWindow"
+#include "ui_CFDbeta.h"
+
+#include "pqMainControlsToolbar.h"
+#include "pqAnimationTimeToolbar.h"
+#include "pqCameraToolbar.h"
+#include "pqVCRToolbar.h"
+#include "pqSetName.h"
+
+namespace Ui{
+	 class MainWindow;
+}
 
 class QVTKView :public QMainWindow
 {
@@ -35,12 +46,14 @@ public:
 public:
     //  show the model
 	int ShowModel(QVTKWidget *QVTK ) ;
-	void InitTheMainWindow( ) ;
+	void InitTheMainWindow(Ui::MainWindow *ui ) ;
+	void buildRecentFilesMenu(QMenu &RecentFiles);
+	void buildToolBars(QMainWindow &MainWindow);
 private:
-    class pqInternals;
-    pqInternals* Internals;
+    
+
 private slots:
-    void showHelpForProxy(const QString& groupname, const QString& proxyname);
+    
 	
 };
 

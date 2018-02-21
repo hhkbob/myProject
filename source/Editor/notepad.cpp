@@ -240,7 +240,7 @@ void NotePad::mouseMoveEvent(QMouseEvent *event)
 			str += block.text();
 		}
 
-		// QToolTip::showText(event->globalPos(), str, this);
+		 QToolTip::showText(event->globalPos(), str, this);
 	}
 	else
 	{

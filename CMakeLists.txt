@@ -25,12 +25,13 @@ cmake_minimum_required( VERSION 2.8 )
 CMAKE_POLICY(SET CMP0020 NEW)
 
 include_directories( 
-         source/CFDMainWindow/initwindow
+     source/CFDMainWindow/initwindow
 	 soucr/CFDMainWindow
 	 source/
 	 source/Editor
 	 source/OutputMessage
-         source/Core
+     source/Core
+	 Editor/
 	)
 
 #set(CMAKE_INCLUDE_CURRENT_DIR ON)	 

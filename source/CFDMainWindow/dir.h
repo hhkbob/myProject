@@ -34,6 +34,7 @@
 #include "QTreeView"
 #include "QMouseEvent"
 #include "qdebug.h"
+#include "iostream"
 
 
 class CFDbetaTreeView :public QTreeView
@@ -251,10 +252,18 @@ void MainWindow::on_treeView_doubleClicked(const QModelIndex &index)
 				 printf("%s\n\n", CurrentPath.toLocal8Bit().data());
 				 printf("Debug exit\n\n");
 #endif
-				 CFDbetaTreeView TreeView(model, item);
-				 TreeView.initTheModel(ui->treeView, QString(UpperPath) );
-				 CurrentPath = QString(UpperPath);
-				 Watcher.addPath(CurrentPath);
+				 QFileInfo DirInfo( CurrentPath );
+				 if (DirInfo.isDir())
+				 {
+					 CFDbetaTreeView TreeView(model, item);
+					 TreeView.initTheModel(ui->treeView, QString(UpperPath));
+					 CurrentPath = QString(UpperPath);
+					 Watcher.addPath(CurrentPath);
+				 }
+				 else
+				 {
+					 printf("The Directory does not exist\n");
+				 }
 			 }
 			 else
 			 {
@@ -279,14 +288,15 @@ void MainWindow::on_treeView_doubleClicked(const QModelIndex &index)
 			 else
 			 {
 				 editorUI->openFile(FileName);
-
+				 if( tabEditor->isHidden())
+				    tabEditor->show();				
 				 //  change the StatusBar
 				 labelStatusBar->setText(FileName);
 			 }
 		 }
      //strcat( controlDict, FileName.toLocal8Bit().data() ) ;
 
-     //editorUI->openFile(QString( controlDict ) ) ;
+     //editorui->openFile(QString( controlDict ) ) ;
 	 
 	 // change the status bar
      //labelStatusBar->setText( controlDict ) ;  
