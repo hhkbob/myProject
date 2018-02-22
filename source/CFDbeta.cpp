@@ -76,10 +76,28 @@ MainWindow::MainWindow( QWidget *parent ) :QMainWindow(parent),
      textBrowser->setStyleSheet("border-top: 0px; border-bottom: 0px;" );
 
 	 //  add the blockMesh to the mainToolBar
-	 mainToolBar = new QToolBar;
+	 mainToolBar = new QToolBar("MainToolBar");
 	 blockMesh = new QAction("blockMesh", mainToolBar);
 	 blockMesh->setIcon(QIcon(":/Resource/512_512/grid.png"));
 	 mainToolBar->addAction(blockMesh);
+	 //  connect the slot
+	 connect(blockMesh, SIGNAL(triggered()), this, SLOT(BlockMeshTrriger()));
+	 
+	 wmake = new QAction("wmake", mainToolBar); 
+	 mainToolBar->addAction(wmake);
+	 connect(wmake, SIGNAL(triggered()), this, SLOT(WmakeTrriger()));
+	 
+	 run = new QAction("run", mainToolBar );
+	 mainToolBar->addAction(run);
+	 connect(run, SIGNAL(triggered()), this, SLOT(RunTrriger()));
+	 
+	 pyRun = new QAction("pyRun", mainToolBar);
+	 mainToolBar->addAction(pyRun);
+	 connect(pyRun, SIGNAL(triggered()), this, SLOT(pyRunTrriger()));
+	 
+	 clear = new QAction("clear",mainToolBar);
+	 mainToolBar->addAction(clear);
+	 connect(clear, SIGNAL(triggered()), this, SLOT(clearTrriger()));
 	 //  add the ToolBar
 	 addToolBar(mainToolBar);
 
@@ -128,13 +146,12 @@ MainWindow::MainWindow( QWidget *parent ) :QMainWindow(parent),
 	 connect(ui->FolderView, SIGNAL(clicked()), this, SLOT(ShowTreeView()));
 	 connect(ui->Output, SIGNAL(clicked()), this, SLOT(ShowTextBrowser()));
 
-	 //  connect the slot
-	 connect(blockMesh, SIGNAL(triggered()), this, SLOT(BlockMeshTrriger()));
+
 }
 
 MainWindow::~MainWindow()
 {
-        //  note: delete the point step by step, follow the order
+  //  note: delete the point step by step, follow the order
 	delete ui;
 	delete labelStatusBar;
 	delete TreeViewMenu;
@@ -142,16 +159,16 @@ MainWindow::~MainWindow()
 	delete model; 
 	delete textBrowser;
 	delete tabEditor;
-    //  delete the Program bar
-    delete main;
-    delete FindFile;
-    delete Program ;
-    //  delete the editor toolbar
-    delete newfile;
-    delete save ;
-    delete editorToolBar;
-    //  delete the mainToolBar
-    delete blockMesh ;
+  //  delete the Program bar
+  delete main;
+  delete FindFile;
+  delete Program ;
+  //  delete the editor toolbar
+  delete newfile;
+  delete save ;
+  delete editorToolBar;
+  //  delete the mainToolBar
+  delete blockMesh ;
 	delete mainToolBar;
         
 	

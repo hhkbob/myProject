@@ -139,7 +139,11 @@ public:
        QAction *newfile;
 //  mainToolBar
 	   QToolBar *mainToolBar;
-       QAction *blockMesh;
+     QAction *blockMesh;
+     QAction *wmake;
+     QAction *run;
+     QAction *pyRun;
+     QAction *clear;
 //  editor widget
 	   QTabWidget *tabEditor;
 		
