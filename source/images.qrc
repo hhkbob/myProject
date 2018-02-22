@@ -14,8 +14,15 @@
         <file>Resource/512_512/doc_empty.png</file>
         <file>Resource/512_512/grid.png</file>
         <file>Resource/512_512/newfile.png</file>
+        <file>Resource/512_512/pyRun.png</file>
         <file>Resource/256_256/main.png</file>
         <file>Resource/256_256/ssearch.png</file>
         <file>Resource/256_256/new_folder.png</file>
+        <file>Resource/512_512/run.png</file>
+        <file>Resource/512_512/wmake.png</file>
+        <file>Resource/512_512/clear.png</file>
+        <file>Resource/256_256/pyRun.png</file>
+        <file>Resource/256_256/wmake.png</file>
+        <file>Resource/256_256/run.png</file>
     </qresource>
 </RCC>

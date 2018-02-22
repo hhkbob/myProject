@@ -37,6 +37,7 @@ void MainWindow::initMainWindowAction( )
     bool successful = ConfigWindow.ConfigurationFileExist( ) ;
     if( !successful )
 	ConfigWindow.exec( ) ;
+	RunModel = new RunCommand(CurrentPath, ConfigWindow.CFDbetaFOAMDir);
 }
 
 

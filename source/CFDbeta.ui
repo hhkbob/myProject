@@ -101,9 +101,9 @@
     <property name="title">
      <string>Mesh</string>
     </property>
-    <addaction name="actionReadMesh"/>
-    <addaction name="actionCheck"/>
-    <addaction name="actionRefine"/>
+    <addaction name="ReadMesh"/>
+    <addaction name="Check"/>
+    <addaction name="Refine"/>
     <addaction name="actionCollapseEdges"/>
     <addaction name="actionModify"/>
     <addaction name="actionPDR"/>
@@ -438,24 +438,20 @@
    </attribute>
    <widget class="pqComparativeVisPanel" name="comparativeVisPanel"/>
   </widget>
-  <widget class="QDockWidget" name="Boundary">
+  <widget class="QDockWidget" name="colorMapEditorDock">
    <property name="font">
     <font>
      <family>Times New Roman</family>
     </font>
    </property>
    <property name="windowTitle">
-    <string>Boundary</string>
+    <string>Color Editor</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents_3">
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <layout class="QGridLayout" name="gridLayout_6"/>
-     </item>
-    </layout>
+   <widget class="pqColorMapEditor" name="colorMapEditorPanel">
+    <layout class="QGridLayout" name="gridLayout"/>
    </widget>
   </widget>
   <action name="Image_FIle">
@@ -502,17 +498,17 @@
     <string>Save as</string>
    </property>
   </action>
-  <action name="actionReadMesh">
+  <action name="ReadMesh">
    <property name="text">
     <string>Import</string>
    </property>
   </action>
-  <action name="actionCheck">
+  <action name="Check">
    <property name="text">
     <string>Check</string>
    </property>
   </action>
-  <action name="actionRefine">
+  <action name="Refine">
    <property name="text">
     <string>autoRefine</string>
    </property>
@@ -684,7 +680,13 @@
   <customwidget>
    <class>TabWidget</class>
    <extends>QWidget</extends>
-   <header location="global">CFDMainWindow/TabWidget.h</header>
+   <header location="global">TabWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>pqColorMapEditor</class>
+   <extends>QWidget</extends>
+   <header>pqColorMapEditor.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

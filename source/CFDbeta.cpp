@@ -34,12 +34,12 @@
 #endif
 
 #include "pqMainControlsToolbar.h"
+#include "pqApplicationCore.h"
 
 MainWindow::MainWindow( QWidget *parent ) :QMainWindow(parent),
    ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-	
     //  define the platform
     RunningPlatForm = WINDOWRUNNING;
     initMainWindowAction( ) ;  
@@ -75,31 +75,8 @@ MainWindow::MainWindow( QWidget *parent ) :QMainWindow(parent),
                                   border-left: 0px;");
      textBrowser->setStyleSheet("border-top: 0px; border-bottom: 0px;" );
 
-	 //  add the blockMesh to the mainToolBar
-	 mainToolBar = new QToolBar("MainToolBar");
-	 blockMesh = new QAction("blockMesh", mainToolBar);
-	 blockMesh->setIcon(QIcon(":/Resource/512_512/grid.png"));
-	 mainToolBar->addAction(blockMesh);
-	 //  connect the slot
-	 connect(blockMesh, SIGNAL(triggered()), this, SLOT(BlockMeshTrriger()));
-	 
-	 wmake = new QAction("wmake", mainToolBar); 
-	 mainToolBar->addAction(wmake);
-	 connect(wmake, SIGNAL(triggered()), this, SLOT(WmakeTrriger()));
-	 
-	 run = new QAction("run", mainToolBar );
-	 mainToolBar->addAction(run);
-	 connect(run, SIGNAL(triggered()), this, SLOT(RunTrriger()));
-	 
-	 pyRun = new QAction("pyRun", mainToolBar);
-	 mainToolBar->addAction(pyRun);
-	 connect(pyRun, SIGNAL(triggered()), this, SLOT(pyRunTrriger()));
-	 
-	 clear = new QAction("clear",mainToolBar);
-	 mainToolBar->addAction(clear);
-	 connect(clear, SIGNAL(triggered()), this, SLOT(clearTrriger()));
-	 //  add the ToolBar
-	 addToolBar(mainToolBar);
+	 //  add the mainToolBar
+	 buildMainToolBar(  ) ;
 
      //  add the toolbar to the CurrentFolderGroup
      Program = new QToolBar ;
@@ -116,7 +93,7 @@ MainWindow::MainWindow( QWidget *parent ) :QMainWindow(parent),
      Program->addAction( FindFile ) ;
 
      //  add the editor tool bar
-     editorToolBar = new QToolBar ;
+     editorToolBar = new QToolBar( "EditorToolBar" ) ;
      //  add the new file
      newfile = new QAction( "newfile", editorToolBar ) ;
      newfile->setIcon( QIcon(":/Resource/512_512/newfile.png" )) ;
@@ -129,22 +106,24 @@ MainWindow::MainWindow( QWidget *parent ) :QMainWindow(parent),
      addToolBar( editorToolBar ) ;
       
 
-	 //  The File Menu
-	 connect(ui->Image_FIle, SIGNAL(triggered()), this, SLOT(OpenFileImageTrigger()));
-	 connect(ui->Editor_File, SIGNAL(triggered()), this, SLOT(OpenFileEditorTrigger()));
+    //  The File Menu
+    connect(ui->Image_FIle, SIGNAL(triggered()), this, SLOT(OpenFileImageTrigger()));
+    connect(ui->Editor_File, SIGNAL(triggered()), this, SLOT(OpenFileEditorTrigger()));
 	
-	 vtkView.buildRecentFilesMenu( *ui->menuRecents);
-	 
-	 //  the toolbar ui
-	 mainToolBar->setStyleSheet("background-color:rgb(240, 240, 240);");
-	 editorToolBar->setStyleSheet("background-color:rgb(240, 240, 240); ");
-	 
-	 //  set up the paraview client
-	 InitTheMainWindow( );
+    vtkView.buildRecentFilesMenu( *ui->menuRecents);
 
-	 textBrowserMark = 0;
-	 connect(ui->FolderView, SIGNAL(clicked()), this, SLOT(ShowTreeView()));
-	 connect(ui->Output, SIGNAL(clicked()), this, SLOT(ShowTextBrowser()));
+	//  The Mesh Function
+	buildMeshFunction();
+	 
+    //  the toolbar ui
+    editorToolBar->setStyleSheet("background-color:rgb(240, 240, 240); ");
+	 
+    //  set up the paraview client
+    InitTheMainWindow( );
+
+    textBrowserMark = 0;
+    connect(ui->FolderView, SIGNAL(clicked()), this, SLOT(ShowTreeView()));
+    connect(ui->Output, SIGNAL(clicked()), this, SLOT(ShowTextBrowser()));
 
 
 }
@@ -159,17 +138,18 @@ MainWindow::~MainWindow()
 	delete model; 
 	delete textBrowser;
 	delete tabEditor;
-  //  delete the Program bar
-  delete main;
-  delete FindFile;
-  delete Program ;
-  //  delete the editor toolbar
-  delete newfile;
-  delete save ;
-  delete editorToolBar;
-  //  delete the mainToolBar
-  delete blockMesh ;
-	delete mainToolBar;
+    //  delete the Program bar
+    delete main;
+    delete FindFile;
+    delete Program ;
+    //  delete the editor toolbar
+    delete newfile;
+    delete save ;
+    delete editorToolBar;
+    //  delete the mainToolBar
+    deleteMainToolBar() ;
+	delete RunModel;
+
         
 	
 }
@@ -180,37 +160,6 @@ int MainWindow::initTabAndQVTKWidget( )
 	//tabEditor->setContextMenuPolicy(Qt::CustomContextMenu);
 	//tabEditor->setTabsClosable(true);
 	return 1 ;
-}
-
-void MainWindow::RunnCommand(int mark, QString run, int CommandType )
-{
-	if ( mark == WINDOWRUNNING)
-	{
-           #ifdef WIN32
-		   WinExec(run.toLocal8Bit().data(), SW_SHOW );
-           #endif
-
-	}
-	else if (mark == LINUXRUNNING)
-	{
-		QString runFileInLinux;
-		if( CommandType == OPENFOAM_COMMAND )
-		    runFileInLinux = "bash -c \"" + ConfigWindow.CFDbetaFOAMDir + " && ";
-		else if( CommandType == COMMAND_COMMAND )
-			runFileInLinux = "bash -c \"" ;
-#ifdef WIN32
-		QString pathChange = initWin.FilePathChange(CurrentPath);
-		runFileInLinux += "cd  " + pathChange + " && " + run + "\"";
-#else
-		runFileInLinux += "cd  " + CurrentPath + " && " + run + "\"";
-#endif
-#ifdef _DEBUG
-	printf("\nThe testing information for is developers:\n\n");
-    printf("This is running Debug:\n%s\n\n",runFileInLinux.toLocal8Bit().data());
-	printf("\n");
-#endif
-		system( runFileInLinux.toLocal8Bit().data() );
-	}
 }
 
 void MainWindow::LineEditRun( ) 
@@ -242,12 +191,14 @@ void MainWindow::LineEditRun( )
 		   }
 	   }
 	   GetPath[mark] = '\0';
+
 	   QFileInfo tmpFileInfo(GetPath);
 	   if (tmpFileInfo.isDir())
 	   {
 		   CFDbetaTreeView TreeViewDir(model, item);
-		   CurrentPath = QString(GetPath);
+		   CurrentPath = initWin.CPathToQtPath(GetPath);
 		   TreeViewDir.initTheModel(ui->treeView, CurrentPath);
+		   Watcher.addPath(CurrentPath);
 	   }
 	   else
 	   {
@@ -265,7 +216,8 @@ void MainWindow::LineEditRun( )
    }
    else
    {
-	   RunnCommand(LINUXRUNNING, command, COMMAND_COMMAND );
+	   RunModel->CurrentPath = CurrentPath;
+	   RunModel->Command(LINUXRUNNING, command, COMMAND_COMMAND );
    }
    QMessageBox box( QMessageBox::Warning, "Warning", "Have Done!") ;
    box.exec() ;
@@ -289,12 +241,6 @@ void MainWindow::ShowTreeView()
 	textBrowser->hide();
 	ui->treeView->show();
 }
-
-void MainWindow::BlockMeshTrriger()
-{
-	RunnCommand(LINUXRUNNING, "blockMesh", OPENFOAM_COMMAND);
-}
-
 void MainWindow::initTheQVTKWindow()
 {
 
@@ -338,12 +284,17 @@ void MainWindow::InitTheMainWindow()
 	this->tabifyDockWidget(ui->animationViewDock, ui->statisticsDock);
 	ui->pipelineBrowserDock->hide();
 	ui->proxyTabDock->hide();
-	ui->Boundary->hide();
+	ui->colorMapEditorDock->hide();
 
 	// Enable help from the properties panel.
 	QObject::connect(ui->proxyTabWidget,
 		SIGNAL(helpRequested(const QString&, const QString&)), this,
 		SLOT(showHelpForProxy(const QString&, const QString&)));
+
+	// setup color editor
+	/// Provide access to the color-editor panel for the application.
+	pqApplicationCore::instance()->registerManager(
+		"COLOR_EDITOR_PANEL", ui->colorMapEditorDock);
 
 	// Populate application menus with actions.
 	// pqParaViewMenuBuilders::buildFileMenu( *ui->menuFIle_F);

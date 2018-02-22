@@ -21,6 +21,9 @@
 */
 
 #include "QVTKView.h"
+#include "pqColorToolbar.h"
+#include "pqRepresentationToolbar.h"
+#include "pqAxesToolbar.h"
 
 #ifdef PARAVIEW_USE_QTHELP
 #include "pqHelpReaction.h"
@@ -57,8 +60,8 @@ void QVTKView::InitTheMainWindow(Ui::MainWindow *ui )
 
   // Enable help from the properties panel.
   QObject::connect(ui->proxyTabWidget,
-    SIGNAL(helpRequested(const QString&, const QString&)), this,
-    SLOT(showHelpForProxy(const QString&, const QString&)));
+  SIGNAL(helpRequested(const QString&, const QString&)), this,
+  SLOT(showHelpForProxy(const QString&, const QString&)));
 
   // Populate application menus with actions.
  // pqParaViewMenuBuilders::buildFileMenu(*ui->menu_File);
@@ -120,6 +123,24 @@ void QVTKView::buildToolBars(QMainWindow &MainWindow)
 		<< pqSetName("cameraToolbar");
 	cameraToolbar->layout()->setSpacing(0);
 	MainWindow.addToolBar(Qt::RightToolBarArea, cameraToolbar);
+
+	QToolBar* colorToolbar = new pqColorToolbar(&MainWindow) 
+		<< pqSetName("variableToolbar");
+	colorToolbar->layout()->setSpacing(0);
+	MainWindow.addToolBar(Qt::TopToolBarArea, colorToolbar);
+	MainWindow.insertToolBarBreak(colorToolbar);
+
+	QToolBar* reprToolbar = new pqRepresentationToolbar(&MainWindow)
+		<< pqSetName("representationToolbar");
+	reprToolbar->layout()->setSpacing(0);
+	MainWindow.addToolBar(Qt::TopToolBarArea, reprToolbar);
+
+	QToolBar* axesToolbar = new pqAxesToolbar(&MainWindow) 
+		<< pqSetName("axesToolbar");
+	axesToolbar->layout()->setSpacing(0);
+	MainWindow.addToolBar(Qt::TopToolBarArea, axesToolbar);
+
+
 }
 	
 	

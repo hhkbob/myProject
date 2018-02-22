@@ -216,90 +216,89 @@ void MainWindow::dirFilePath(char controlDict[],const QModelIndex &index )
 }
 void MainWindow::on_treeView_doubleClicked(const QModelIndex &index) 
 {
-		 QString FileName;
-		 //  isFoleder or isFile
-		 FileName += QStringLiteral("%1").arg(index.data().toString());
-		 FileName = CurrentPath + "/" + FileName;
-                 QFileInfo FileInfo(FileName);
-		 if ( FileInfo.isDir() )
-		 {
-			 // the Upper path
-			 QString file = FileName.section('/', -1);
-			 if (initWin.StringCompare(file.toLocal8Bit().data(), ".."))
-			 {
-				 // get the upper path
-				 int MarkPath = 0;
-				 int len = 0;
-				 char UpperPath[200];
-				 for (int i = 0; i < strlen(CurrentPath.toLocal8Bit().data()); i++)
-				 {				
-					 if (CurrentPath.toLocal8Bit().data()[i] == '/')
-						 MarkPath = len;
-					 len++;
-				 }
-				 for (int i = 0; i <= MarkPath; i++)
-				 {
-					 UpperPath[i] = CurrentPath.toLocal8Bit().data()[i];
-				 }
-				 UpperPath[MarkPath ] = '\0';
-
-				 //  show the UpperPath in the treeView Widget			 
+	QString FileName;
+	//  isFoleder or isFile
+    FileName += QStringLiteral("%1").arg(index.data().toString());
+	FileName = CurrentPath + "/" + FileName;
+    QFileInfo FileInfo(FileName);
+	if (FileInfo.isDir())
+	{
+		// the Upper path
+		QString file = FileName.section('/', -1);
+		if (initWin.StringCompare(file.toLocal8Bit().data(), ".."))
+		{
+			// get the upper path
+			int MarkPath = 0;
+			int len = 0;
+			char UpperPath[200];
+			for (int i = 0; i < strlen(CurrentPath.toLocal8Bit().data()); i++)
+			{
+				if (CurrentPath.toLocal8Bit().data()[i] == '/')
+					MarkPath = len;
+				len++;
+			}
+			for (int i = 0; i <= MarkPath; i++)
+			{
+				UpperPath[i] = CurrentPath.toLocal8Bit().data()[i];
+			}
+			UpperPath[MarkPath] = '\0';
+			int Dir = strlen(UpperPath);
+			//  show the UpperPath in the treeView Widget			 
 #if _DEBUG
-				 printf("This is a test information for developer\n\n");
-				 printf("The Current Path is :\n");
-				 printf("%s\n", UpperPath);
-				 printf("The old path is:\n");
-				 printf("%s\n\n", CurrentPath.toLocal8Bit().data());
-				 printf("Debug exit\n\n");
+			printf("This is a test information for developer\n\n");
+			printf("The Current Path is :\n");
+			printf("The Length = %d, %s\n", Dir, UpperPath);
+			printf("The old path is:\n");
+			printf("%s\n\n", CurrentPath.toLocal8Bit().data());
+			printf("Debug exit\n\n");
 #endif
-				 QFileInfo DirInfo( CurrentPath );
-				 if (DirInfo.isDir())
-				 {
-					 CFDbetaTreeView TreeView(model, item);
-					 TreeView.initTheModel(ui->treeView, QString(UpperPath));
-					 CurrentPath = QString(UpperPath);
-					 Watcher.addPath(CurrentPath);
-				 }
-				 else
-				 {
-					 printf("The Directory does not exist\n");
-				 }
-			 }
-			 else
-			 {
-				 CurrentPath = FileName;
-				 CFDbetaTreeView TreeView(model, item);
-				 TreeView.initTheModel(ui->treeView, FileName);
-				 Watcher.addPath(CurrentPath);
-			 }
-		 }
-		 else 
-		 {
-			 QString runFileBash;
-			 runFileBash = FileName.section('.', -1);
-			 if (initWin.StringCompare(runFileBash.toLocal8Bit().data(), "bat"))
-			 {
-				 RunnCommand( WINDOWRUNNING, FileName, COMMAND_COMMAND );
-			 }
-			 else if (initWin.StringCompare(runFileBash.toLocal8Bit().data(), "sh"))
-			 {
-				 RunnCommand( LINUXRUNNING, FileName, OPENFOAM_COMMAND );
-			 }
-			 else
-			 {
-				 editorUI->openFile(FileName);
-				 if( tabEditor->isHidden())
-				    tabEditor->show();				
-				 //  change the StatusBar
-				 labelStatusBar->setText(FileName);
-			 }
-		 }
-     //strcat( controlDict, FileName.toLocal8Bit().data() ) ;
-
-     //editorui->openFile(QString( controlDict ) ) ;
-	 
-	 // change the status bar
-     //labelStatusBar->setText( controlDict ) ;  
+			QFileInfo DirInfo(UpperPath);
+			if (DirInfo.isDir())
+			{
+				if (Dir==2||Dir==1)  // "*:" and "*"
+				{
+					cout << "cannot Open directory\n";
+				}
+				else
+				{
+					CurrentPath = QString(UpperPath);
+					CFDbetaTreeView TreeView(model, item);
+					TreeView.initTheModel(ui->treeView, QString(CurrentPath));
+					Watcher.addPath(CurrentPath);
+				}
+			}
+		}
+		else  // not the upper folder
+		{
+			CurrentPath = FileName;
+			CFDbetaTreeView TreeView(model, item);
+			TreeView.initTheModel(ui->treeView, FileName);
+			Watcher.addPath(CurrentPath);
+		}
+	}
+	else // is file
+	{
+		QString runFileBash;
+		runFileBash = FileName.section('.', -1);
+		if (initWin.StringCompare(runFileBash.toLocal8Bit().data(), "bat"))
+		{
+			RunModel->CurrentPath = CurrentPath;
+			RunModel->Command( WINDOWRUNNING, FileName, COMMAND_COMMAND );
+		}
+		else if (initWin.StringCompare(runFileBash.toLocal8Bit().data(), "sh"))
+		{
+			RunModel->CurrentPath = CurrentPath;
+			RunModel->Command( LINUXRUNNING, FileName, OPENFOAM_COMMAND );
+		}
+		else
+		{
+			editorUI->openFile(FileName);
+			if( tabEditor->isHidden())
+				  tabEditor->show();				
+			//  change the StatusBar
+			labelStatusBar->setText(FileName);
+		}
+	} 
 }
 
 QString MainWindow::setEditorData( QWidget *editor,
