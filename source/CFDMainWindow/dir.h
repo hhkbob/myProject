@@ -35,6 +35,7 @@
 #include "QMouseEvent"
 #include "qdebug.h"
 #include "iostream"
+#include "QString"
 
 
 class CFDbetaTreeView :public QTreeView
@@ -197,7 +198,7 @@ void MainWindow::dirFilePath(char controlDict[],const QModelIndex &index )
     while( temp.parent().isValid() )
     {
         secondItem = temp.parent( ) ;
-        str = QStringLiteral( "/%1" ).arg( temp.parent().data().toString() ) ;
+        str = QString( "/%1" ).arg( temp.parent().data().toString() ) ;
         initWin.stringAdd( str.toLocal8Bit().data(), controlDict, path1 ) ;
         strcpy(controlDict, path1 ) ;
         temp = secondItem ;

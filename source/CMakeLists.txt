@@ -26,9 +26,9 @@ set( CMAKE_AUTOMOC ON )
 set( CMAKE_AUTOUIC ON )
 set( CMAKE_AUTORCC ON )
 
-find_package( Qt5Widgets REQUIRED)
 find_package( ParaView REQUIRED )
 include( ${PARAVIEW_USE_FILE} )
+find_package( Qt5Widgets )
 
 # include rules for creating custom applications
 include(ParaViewBranding)
@@ -80,7 +80,6 @@ FILE( GLOB SOURCE_FILES
 	   CFDMainWindow/initwindow/configuration.cpp
        CFDMainWindow/initwindow/initMainWindowAction.cpp
 	   OutputMessage/OutputMessage.cpp
-	   
 	   Editor/codeedit.cpp
 	   Editor/config.cpp
 	   Editor/gotolinedialog.cpp

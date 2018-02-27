@@ -32,4 +32,4 @@ class FileOpen: public QWidget
 		QList<pqPipelineSource*> loadData();
 };
 
-#endif FILEOPEN_H
+#endif //FILEOPEN_H

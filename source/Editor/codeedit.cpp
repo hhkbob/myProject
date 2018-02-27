@@ -1,40 +1,22 @@
-/*================================C++========================================*\
-Create: 2018/02/09
-Creator: Huang Huakun
-File Name: codeeditor.cpp
-Platform: windows
-Version: v1.0
-
-Describe: The header of the software main source file.
-
-Example:
-
-\*===========================================================================*/
-
-//  The code's length should not exceed 80 characters.
-//  Every description for a code line should skip two characters.
-//  As you can, do not use the void function. A return code is welcome.
-
-/*
-CopyRight:
-*/
-
 #include <QtWidgets>
+
 #include "codeeditor.h"
+
 
 CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent)
 {
     lineNumberArea = new LineNumberArea(this);
 
-    connect(this, SIGNAL(blockCountChanged(int)), 
-		    this, SLOT(updateLineNumberAreaWidth(int)));
-    connect(this, SIGNAL(updateRequest(QRect,int)), 
-		    this, SLOT(updateLineNumberArea(QRect,int)));
-    connect(this, SIGNAL(cursorPositionChanged()), 
-		    this, SLOT(highlightCurrentLine()));
+    connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
+    connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)));
+    connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
+
+
     updateLineNumberAreaWidth(0);
     highlightCurrentLine();
 }
+
+
 
 int CodeEditor::lineNumberAreaWidth()
 {
@@ -44,35 +26,43 @@ int CodeEditor::lineNumberAreaWidth()
         max /= 10;
         ++digits;
     }
-    int space = 10 + fontMetrics().width(QLatin1Char('9')) * digits;  
+
+    int space = 10 + fontMetrics().width(QLatin1Char('9')) * digits;     //已改
+
     return space;
 }
+
+
 
 void CodeEditor::updateLineNumberAreaWidth(int /* newBlockCount */)
 {
     setViewportMargins(lineNumberAreaWidth(), 0, 0, 0);
 }
 
+
+
 void CodeEditor::updateLineNumberArea(const QRect &rect, int dy)
 {
     if (dy)
         lineNumberArea->scroll(0, dy);
     else
-        lineNumberArea->update(0, rect.y(), 
-		lineNumberArea->width(), rect.height());
+        lineNumberArea->update(0, rect.y(), lineNumberArea->width(), rect.height());
 
     if (rect.contains(viewport()->rect()))
         updateLineNumberAreaWidth(0);
 }
+
+
 
 void CodeEditor::resizeEvent(QResizeEvent *e)
 {
     QPlainTextEdit::resizeEvent(e);
 
     QRect cr = contentsRect();
-    lineNumberArea->setGeometry(QRect(cr.left(), cr.top(), 
-		           lineNumberAreaWidth(), cr.height()));
+    lineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
 }
+
+
 
 void CodeEditor::highlightCurrentLine()
 {
@@ -81,7 +71,7 @@ void CodeEditor::highlightCurrentLine()
     if (!isReadOnly()) {
         QTextEdit::ExtraSelection selection;
 
-        QColor lineColor = QColor(240, 240, 240).lighter(100);
+        QColor lineColor = QColor(Qt::yellow).lighter(160);
 
         selection.format.setBackground(lineColor);
         selection.format.setProperty(QTextFormat::FullWidthSelection, true);
