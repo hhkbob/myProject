@@ -407,25 +407,25 @@ void CodeEditor::contextMenuEvent(QContextMenuEvent *event)
 {
     QMenu menu(this);
 
-    QAction *act = menu.addAction(tr("&撤消"), this, SLOT(undo())); //, QKeySequence::Undo);
+    QAction *act = menu.addAction(tr("&ReTreat"), this, SLOT(undo())); //, QKeySequence::Undo);
     act->setEnabled(document()->isUndoAvailable());
-    act = menu.addAction(tr("&重做"), this, SLOT(redo()));  //, QKeySequence::Redo);
+    act = menu.addAction(tr("&redo"), this, SLOT(redo()));  //, QKeySequence::Redo);
     act->setEnabled(document()->isRedoAvailable());
     menu.addSeparator();
-    act = menu.addAction(tr("剪切"), this, SLOT(cut()));     //, QKeySequence::Cut);
+    act = menu.addAction(tr("cut"), this, SLOT(cut()));     //, QKeySequence::Cut);
     act->setEnabled(textCursor().hasSelection());
-    act = menu.addAction(tr("复制"), this, SLOT(copy()));  //, QKeySequence::Copy);
+    act = menu.addAction(tr("copy"), this, SLOT(copy()));  //, QKeySequence::Copy);
     act->setEnabled(textCursor().hasSelection());
-    act = menu.addAction(tr("粘贴"), this, SLOT(paste())); //, QKeySequence::Paste);
+    act = menu.addAction(tr("paste"), this, SLOT(paste())); //, QKeySequence::Paste);
     act->setEnabled(canPaste());
-    act = menu.addAction(tr("删除"), this, SLOT(deleteSelected())); //, QKeySequence::Delete);
+    act = menu.addAction(tr("delete"), this, SLOT(deleteSelected())); //, QKeySequence::Delete);
     act->setEnabled(textCursor().hasSelection());
-    act = menu.addAction(tr("全选"), this, SLOT(selectAll())); //, QKeySequence::SelectAll);
+    act = menu.addAction(tr("selet all"), this, SLOT(selectAll())); //, QKeySequence::SelectAll);
     act->setEnabled(!document()->isEmpty());
     menu.addSeparator();
-    act = menu.addAction(tr("大写转换"), this, SLOT(toUpperCase()));
+    act = menu.addAction(tr("Upper"), this, SLOT(toUpperCase()));
     act->setEnabled(textCursor().hasSelection());
-    act = menu.addAction(tr("小写转换"), this, SLOT(toLowerCase()));
+    act = menu.addAction(tr("Lower"), this, SLOT(toLowerCase()));
     act->setEnabled(textCursor().hasSelection());
 
     menu.exec(event->globalPos());
