@@ -35,34 +35,34 @@ public:
     const static int StateShift = 8;
 
 public:
-	CodeEditor(QWidget *parent = 0);
+    CodeEditor(QWidget *parent = 0);
 
     void lineNumberAreaPaintEvent(QPaintEvent *event);
     int lineNumberAreaWidth();
-    int lineNumDigits;        
-    void convertCase(bool toUpper ) ;   
+    int lineNumDigits;        //行号位数
+    void convertCase(bool toUpper ) ;   //大小写转换
 
 
 protected:
     void resizeEvent(QResizeEvent *event);
 
 public slots:
-    int search(QString, bool, bool, bool); 
-    void replace(QString, QString, bool, bool, bool);   
-    void replaceAll(QString, QString, bool, bool);  
-    void gotoLine(int lineNumber);  
+    int search(QString, bool, bool, bool); //查找
+    void replace(QString, QString, bool, bool, bool);   //替换
+    void replaceAll(QString, QString, bool, bool);  //替换所有
+    void gotoLine(int lineNumber);  //转到行
     void toUpperCase() ;
 
     void toLowerCase() ;
 
 private slots:
     void deleteSelected()
-    {	textCursor().removeSelectedText();}    
+    {	textCursor().removeSelectedText();}    //删除所选内容
 
     void blockCountChanged(int count) ;
 
-    void contentsChange(int, int, int); 
-    void ensureCursorVisible(); 
+    void contentsChange(int, int, int); //文本内容发生改变触发的槽
+    void ensureCursorVisible(); //光标可见
 
 
 private slots:
@@ -72,7 +72,7 @@ private slots:
 
 private:
     QWidget *lineNumberArea;
-    int setBlockState(QTextBlock&); 
+    int setBlockState(QTextBlock&); //设置段落状态
     void contextMenuEvent(QContextMenuEvent *);
 };
 

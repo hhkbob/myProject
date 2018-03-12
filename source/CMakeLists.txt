@@ -150,9 +150,13 @@ FILE( GLOB ToolBar
 	   ToolBar/mainToolBar.h
 	 )
 
-qt5_wrap_ui( uic ${UI_FILES} )	
-qt5_wrap_cpp( moc ${SOURCE_FILES} )
+QT5_WRAP_CPP(MOC_BUILT_SOURCES
+    ${SOURCE_FILES})
+QT5_WRAP_UI(UI_BUILT_SOURCES
+    ${UI_FILES})
 qt5_add_resources( res images.qrc )
+
+
 
 source_group( "initwindow" FILES ${initwindow} )	
 source_group( "OutputMessage" FILES ${OutputMessage} )
@@ -176,7 +180,11 @@ build_paraview_client( FlowCD
 )
 # set the target properties for the project. Do not edit this line
 # use the console to launch our soft
-SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:CONSOLE") 
-target_link_libraries( FlowCD Qt5::Widgets Qt5::Core Qt5::Gui )  
+
+if( WIN32 )
+  SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:CONSOLE")
+endif()
+ 
+target_link_libraries( FlowCD Qt5::Gui Qt5::Core Qt5::Widgets)
 target_link_libraries( FlowCD ${VTK_LIBRARIES} )    
                                                  

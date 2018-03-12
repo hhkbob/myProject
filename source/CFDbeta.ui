@@ -654,12 +654,6 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>pqPropertiesPanel</class>
-   <extends>QWidget</extends>
-   <header location="global">pqPropertiespanel.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>pqDataInformationWidget</class>
    <extends>QWidget</extends>
    <header location="global">pqDataInformationWidget.h</header>
@@ -687,6 +681,12 @@
    <class>pqColorMapEditor</class>
    <extends>QWidget</extends>
    <header>pqColorMapEditor.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>pqPropertiesPanel</class>
+   <extends>QWidget</extends>
+   <header location="global">pqPropertiesPanel.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

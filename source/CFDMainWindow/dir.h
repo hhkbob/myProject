@@ -219,7 +219,7 @@ void MainWindow::on_treeView_doubleClicked(const QModelIndex &index)
 {
 	QString FileName;
 	//  isFoleder or isFile
-    FileName += QStringLiteral("%1").arg(index.data().toString());
+    FileName += QString("%1").arg(index.data().toString());
 	FileName = CurrentPath + "/" + FileName;
     QFileInfo FileInfo(FileName);
 	if (FileInfo.isDir())
@@ -372,7 +372,7 @@ bool MainWindow::dirDelete()
     QModelIndex index=ui->treeView->currentIndex();
 	
 	//  get the file name
-    filename += QStringLiteral("/%1").arg(index.data().toString() ) ; 
+    filename += QString("/%1").arg(index.data().toString() ) ;
     dirFilePath( filepath, index ) ;
     strcat( filepath, filename.toLocal8Bit().data() ) ;
 	
@@ -407,7 +407,7 @@ void MainWindow::dirOpenNotePad()
 {
     QString filename ;
     QModelIndex index=ui->treeView->currentIndex();
-    filename = QStringLiteral("%1").arg(index.data().toString() ) ;
+    filename = QString("%1").arg(index.data().toString() ) ;
 	filename = CurrentPath + "/" + filename ;
     QFileInfo info( filename ) ;
     if( info.isDir() )
@@ -462,7 +462,7 @@ void MainWindow::on_treeView_customContextMenuRequested(const QPoint &pos)
 void MainWindow::RenameItem()
 {
 	QModelIndex index = ui->treeView->currentIndex();
-	QString FileName = QStringLiteral("%1").arg(index.data().toString());
+    QString FileName = QString("%1").arg(index.data().toString());
 	FileName = CurrentPath + "/" + FileName;
 }
 
