@@ -29,6 +29,13 @@ set( CMAKE_AUTORCC ON )
 find_package( ParaView REQUIRED )
 include( ${PARAVIEW_USE_FILE} )
 find_package( Qt5Widgets )
+find_path( QScintilla_DIR  QScintilla /../QScintilla )
+if( NOT QScintilla_DIR )
+   message(FATAL_ERROR "QScintilla_DIR not found")
+endif( NOT QScintilla_DIR )
+
+# include the QScintilla_INCLUDE dir
+include_directories( ${QScintilla_DIR}/Qt4Qt5  )
 
 # include rules for creating custom applications
 include(ParaViewBranding)
@@ -54,19 +61,21 @@ FILE( GLOB HEADER_FILES
 	   CFDMainWindow/initwindow/initwindow.h
 	   OutputMessage/OutputMessage.h
 	   CFDMainWindow/initwindow/configuration.h
-	   Editor/codeeditor.h
-	   Editor/config.h
-	   Editor/gotolinedialog.h
-	   Editor/notepad.h
-	   Editor/perferencedialog.h
-	   Editor/searchdialog.h
-	   Editor/textview.h
+	   #Editor/codeeditor.h
+	   E#ditor/config.h
+	   #Editor/gotolinedialog.h
+	   #Editor/notepad.h
+	   #Editor/perferencedialog.h
+	   #Editor/searchdialog.h
+	   #Editor/textview.h
 	   Editor/EditorAction.h
-       Core/myui.h
-       Core/mytoolbar.h
-       Core/qmenuButton.h
+	   Editor/Editor.h
+       #Core/myui.h
+       #Core/mytoolbar.h
+       #Core/qmenuButton.h
 	   Core/RunCommand.h
 	   ToolBar/mainToolBar.h
+	   Mesh/BlockMesh.h
 	)
 FILE( GLOB SOURCE_FILES
        CFDbeta.cpp
@@ -80,28 +89,31 @@ FILE( GLOB SOURCE_FILES
 	   CFDMainWindow/initwindow/configuration.cpp
        CFDMainWindow/initwindow/initMainWindowAction.cpp
 	   OutputMessage/OutputMessage.cpp
-	   Editor/codeedit.cpp
-	   Editor/config.cpp
-	   Editor/gotolinedialog.cpp
-	   Editor/notepad.cpp
-	   Editor/perferencedialog.cpp
-	   Editor/searchdialog.cpp
-	   Editor/textview.cpp
+	   #Editor/codeedit.cpp
+	   #Editor/config.cpp
+	   #Editor/gotolinedialog.cpp
+	   #Editor/notepad.cpp
+	   #Editor/perferencedialog.cpp
+	   #Editor/searchdialog.cpp
+	   #Editor/textview.cpp
 	   Editor/EditorAction.cpp
-       Core/myui.cpp
-       Core/mytoolbar.cpp
-       Core/qmenuButton.cpp
+	   Editor/Editor.cpp
+       #Core/myui.cpp
+       #Core/mytoolbar.cpp
+       #Core/qmenuButton.cpp
 	   Core/RunCommand.cpp
 	   ToolBar/mainToolBar.cpp
+	   Mesh/BlockMesh.cpp
            
     )
 FILE( GLOB UI_FILES
        CFDbeta.ui
 	   CFDMainWindow/initwindow/configuration.ui
-	   Editor/gotolinedialog.ui
-	   Editor/perferencedialog.ui
-	   Editor/searchdialog.ui
-       Core/myui.ui
+	   Mesh/BlockMesh.ui
+	   #Editor/gotolinedialog.ui
+	   #Editor/perferencedialog.ui
+	   #Editor/searchdialog.ui
+       #Core/myui.ui
 	 )
 	 
 FILE( GLOB initwindow
@@ -118,30 +130,32 @@ FILE( GLOB OutputMessage
        OutputMessage/OutputMessage.cpp
 	)
 FILE( GLOB Editor
-       Editor/codeeditor.cpp
-	   Editor/config.cpp
-	   Editor/gotolinedialog.cpp
-	   Editor/notepad.cpp
-	   Editor/perferencedialog.cpp
-	   Editor/searchdialog.cpp
-	   Editor/textview.cpp
-	   Editor/codeeditor.h
-	   Editor/config.h
-	   Editor/gotolinedialog.h
-	   Editor/notepad.h
-	   Editor/perferencedialog.h
-	   Editor/searchdialog.h
-	   Editor/textview.h
+       #Editor/codeeditor.cpp
+	   #Editor/config.cpp
+	   #Editor/gotolinedialog.cpp
+	   #Editor/notepad.cpp
+	   #Editor/perferencedialog.cpp
+	   #Editor/searchdialog.cpp
+	   #Editor/textview.cpp
+	   #Editor/codeeditor.h
+	   #Editor/config.h
+	   #Editor/gotolinedialog.h
+	   #Editor/notepad.h
+	   #Editor/perferencedialog.h
+	   #Editor/searchdialog.h
+	   #Editor/textview.h
 	   Editor/EditorAction.h
 	   Editor/EditorAction.cpp
+	   Editor/Editor.cpp
+	   Editor/Editor.h
     )
 FILE( GLOB Core
-       Core/myui.cpp
-       Core/myui.h
-       Core/mytoolbar.cpp
-       Core/mytoolbar.h
-       Core/qmenuButton.h
-       Core/qmenuButton.cpp
+       #Core/myui.cpp
+       #Core/myui.h
+       #Core/mytoolbar.cpp
+       #Core/mytoolbar.h
+       #Core/qmenuButton.h
+       #Core/qmenuButton.cpp
 	   Core/RunCommand.h
 	   Core/RunCommand.cpp
      )
@@ -150,9 +164,9 @@ FILE( GLOB ToolBar
 	   ToolBar/mainToolBar.h
 	 )
 
-QT5_WRAP_CPP(MOC_BUILT_SOURCES
+qt5_wrap_cpp(MOC_BUILT_SOURCES
     ${SOURCE_FILES})
-QT5_WRAP_UI(UI_BUILT_SOURCES
+qt5_wrap_ui(UI_BUILT_SOURCES
     ${UI_FILES})
 qt5_add_resources( res images.qrc )
 
@@ -184,7 +198,9 @@ build_paraview_client( FlowCD
 if( WIN32 )
   SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:CONSOLE")
 endif()
- 
-target_link_libraries( FlowCD Qt5::Gui Qt5::Core Qt5::Widgets)
-target_link_libraries( FlowCD ${VTK_LIBRARIES} )    
-                                                 
+
+target_link_libraries(FlowCD LINK_PRIVATE ${qt_targets})
+#target_link_libraries( FlowCD Qt5::Gui Qt5::Core Qt5::Widgets)
+target_link_libraries( FlowCD ${VTK_LIBRARIES} )  
+target_link_libraries( FlowCD ${QScintilla_DIR}/lib/qscintilla2_qt5d.lib )  
+ target_link_libraries( FlowCD ${QScintilla_DIR}/lib/qscintilla2_qt5.lib )                                             

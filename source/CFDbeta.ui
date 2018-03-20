@@ -70,7 +70,7 @@
      <x>0</x>
      <y>0</y>
      <width>868</width>
-     <height>27</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFIle_F">
@@ -157,6 +157,7 @@
      <addaction name="actionTools"/>
     </widget>
     <addaction name="menuParaViewTools"/>
+    <addaction name="actionYPlus_Estimate"/>
     <addaction name="actionUser_Defined"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -636,6 +637,11 @@
   <action name="actionEdit">
    <property name="text">
     <string>Edit</string>
+   </property>
+  </action>
+  <action name="actionYPlus_Estimate">
+   <property name="text">
+    <string>yPlus Estimate</string>
    </property>
   </action>
  </widget>

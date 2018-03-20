@@ -49,7 +49,9 @@
 #include "OutputMessage.h"
 #include "configuration.h"
 #include "QVTKView.h"
-#include "myui.h"
+#include "Editor.h"
+#include "Mesh/BlockMesh.h"
+//#include "myui.h"
 
 #include "pqLoadDataReaction.h"
 #include "pqActiveObjects.h"
@@ -60,6 +62,10 @@
 #include "TabWidget.h"
 #include "RunCommand.h"
 #include <fstream>
+#include <qfile.h>
+#include <QTextStream>
+
+//#include "ToolBar/calculator.h"
 
 using namespace std ;
 
@@ -73,6 +79,7 @@ class MainWindow : public QMainWindow
 {
 	Q_OBJECT
     typedef QMainWindow Superclass;
+    #define EDITOR   static_cast<QsciScintilla *>(tabEditor->currentWidget())
 public:
 	explicit MainWindow(QWidget *parent=0 );
 	~MainWindow();
@@ -91,11 +98,14 @@ public:
 	//  the editor outter path
 	char Notepad[ 200 ];
 	TabWidget *EditorTab;
-	myUI *editorUI;
-	Config *conf;
+
+
+	//myUI *editorUI;
+	//Config *conf;
 	QPushButton *CFD;
 	QPushButton *editor;
     QToolBar  *editorToolBar;
+	QToolBar  *FileToolBar;
 	QPushButton *Mesh;
 
 	//  mainToolBar
@@ -143,8 +153,8 @@ public:
 	//  FileMenu
                 
 //  EditorToolBar
-    QAction *save ;
-    QAction *newfile;
+   // QAction *save ;
+   // QAction *newfile;
  
 //  editor widget
 	QTabWidget *tabEditor;
@@ -154,6 +164,9 @@ public:
     int initConsoleWindow( ) ;   
 //  CFDMainWindow/initWindow/initMainWindowAction.cpp function     		
 	void initMainWindowAction( ) ;
+	void setCurrentFile(const QString &fileName);
+	QString strippedName(const QString &fullFileName);
+	void OpenFile(QString filename);
 private slots:
  
 //  dir.h slots 
@@ -181,12 +194,30 @@ private slots:
 	void OpenFileImageTrigger();
 	void OpenFileEditorTrigger();
 	void showHelpForProxy(const QString& groupname,const QString& proxyname);
+	void yPlusEstimate();
+	void MeshGUITrigger();
+	void newFile();
+	bool Save();
+	bool saveFile(const QString &fileName);
+	bool saveAs();
+	void fileClose(int);
+	bool maybeSave(int index);
+	
 
 private:
 	Q_DISABLE_COPY(MainWindow)
 	Ui::MainWindow *ui;
 	int textBrowserMark;
 	pqLoadDataReaction *Loadata;
+	BlockMesh Meshgui;
+	FoamEditor *codeEditor;
+
+	QAction *newfile;
+	QAction *savetrigger;
+	int newNumber;
+	QStringList openedFiles;
+	QString curFile;
+
 };
 
 #endif //CFDBETA_H

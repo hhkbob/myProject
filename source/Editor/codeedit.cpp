@@ -111,7 +111,7 @@ void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
     }
 }
 
-//查找
+
 int CodeEditor::search(QString str, bool backward, bool matchCase, bool regExp)
 {
     QTextDocument::FindFlags options;
@@ -136,7 +136,7 @@ int CodeEditor::search(QString str, bool backward, bool matchCase, bool regExp)
     return true;
 }
 
-//替换
+
 void CodeEditor::replace(QString str1, QString str2, bool backward, bool matchCase,
                       bool regExp)
 {
@@ -162,7 +162,7 @@ void CodeEditor::replace(QString str1, QString str2, bool backward, bool matchCa
     }
 }
 
-//替换所有
+
 void CodeEditor::replaceAll(QString str1, QString str2, bool matchCase,
                          bool regExp)
 {
@@ -175,7 +175,7 @@ void CodeEditor::replaceAll(QString str1, QString str2, bool matchCase,
         replace(str1, str2, false, matchCase, regExp);
 }
 
-//转到行
+
 void CodeEditor::gotoLine(int lineNumber)
 {
     QTextCursor cursor = textCursor();
@@ -184,7 +184,7 @@ void CodeEditor::gotoLine(int lineNumber)
     setTextCursor(cursor);
 }
 
-//文本内容发生改变触发的槽
+
 void CodeEditor::contentsChange(int pos, int, int)
 {
     QTextBlock block = textCursor().block();
@@ -225,7 +225,7 @@ void CodeEditor::contentsChange(int pos, int, int)
     }
 }
 
-//光标可见
+
 void CodeEditor::ensureCursorVisible()
 {
     QTextCursor cursor = textCursor();
@@ -247,11 +247,11 @@ void CodeEditor::toUpperCase()
 {
     convertCase(true );
 
-}    //转为大写
+}   
 void CodeEditor::toLowerCase()
 {
     convertCase(false);
-}   //转为小写
+}   
 
 void CodeEditor::convertCase(bool toUpper )
 {
@@ -264,9 +264,9 @@ void CodeEditor::convertCase(bool toUpper )
 void CodeEditor::blockCountChanged(int count)
 {
     lineNumDigits = qMax(2, QString::number(count).length());
-} //文本的段落数发生改变时触发的槽
+} 
 
-//设置段落状态
+
 int CodeEditor::setBlockState(QTextBlock &block)
 {
     int previousBlockState = block.previous().userState();
@@ -407,7 +407,7 @@ void CodeEditor::contextMenuEvent(QContextMenuEvent *event)
 {
     QMenu menu(this);
 
-    QAction *act = menu.addAction(tr("&ReTreat"), this, SLOT(undo())); //, QKeySequence::Undo);
+    QAction *act = menu.addAction(tr("&reture"), this, SLOT(undo())); //, QKeySequence::Undo);
     act->setEnabled(document()->isUndoAvailable());
     act = menu.addAction(tr("&redo"), this, SLOT(redo()));  //, QKeySequence::Redo);
     act->setEnabled(document()->isRedoAvailable());
@@ -420,12 +420,12 @@ void CodeEditor::contextMenuEvent(QContextMenuEvent *event)
     act->setEnabled(canPaste());
     act = menu.addAction(tr("delete"), this, SLOT(deleteSelected())); //, QKeySequence::Delete);
     act->setEnabled(textCursor().hasSelection());
-    act = menu.addAction(tr("selet all"), this, SLOT(selectAll())); //, QKeySequence::SelectAll);
+    act = menu.addAction(tr("selecty all"), this, SLOT(selectAll())); //, QKeySequence::SelectAll);
     act->setEnabled(!document()->isEmpty());
     menu.addSeparator();
-    act = menu.addAction(tr("Upper"), this, SLOT(toUpperCase()));
+    act = menu.addAction(tr("upper"), this, SLOT(toUpperCase()));
     act->setEnabled(textCursor().hasSelection());
-    act = menu.addAction(tr("Lower"), this, SLOT(toLowerCase()));
+    act = menu.addAction(tr("lower"), this, SLOT(toLowerCase()));
     act->setEnabled(textCursor().hasSelection());
 
     menu.exec(event->globalPos());

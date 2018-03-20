@@ -293,7 +293,9 @@ void MainWindow::on_treeView_doubleClicked(const QModelIndex &index)
 		}
 		else
 		{
-			editorUI->openFile(FileName);
+			//editorUI->openFile(FileName);
+			//  OpenFile 
+			OpenFile(FileName);
 			if( tabEditor->isHidden())
 				  tabEditor->show();				
 			//  change the StatusBar

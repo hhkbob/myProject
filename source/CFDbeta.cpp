@@ -28,6 +28,7 @@
 #include "CFDMainWindow/dir.h"
 #include <qgridlayout.h>
 #include "QSplitter"
+#include "qtabwidget.h"
 
 #ifdef WIN32
 #include <windows.h>
@@ -36,13 +37,14 @@
 #include "pqMainControlsToolbar.h"
 #include "pqApplicationCore.h"
 
+
 MainWindow::MainWindow( QWidget *parent ) :QMainWindow(parent),
    ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     //  define the platform
     RunningPlatForm = WINDOWRUNNING;
-    initMainWindowAction( ) ;  
+    initMainWindowAction( ) ;
 
     //  init the QVTK widget and tabWidget
     initTabAndQVTKWidget( ) ;
@@ -57,16 +59,17 @@ MainWindow::MainWindow( QWidget *parent ) :QMainWindow(parent),
 	EditorTab = new TabWidget;
 	tabEditor = ui->EditorManager->EditorWidget;
 	tabEditor->setTabsClosable(true);
-	//ui->EditorLayout->setMargin(0);
-	//ui->EditorLayout->setSpacing(0);
-	//ui->EditorLayout->addWidget(tabEditor);
-	//DockManager->hide();
-	//tabEditor->hide();
+	connect(tabEditor, SIGNAL(tabCloseRequested(int)), this, SLOT(fileClose(int)));
+	
 
+	//  add the Mesh GUI
+	QAction *MeshGUI = new QAction("Mesh Gui", ui->menuMesh_M);
+	ui->menuMesh_M->addAction(MeshGUI);
+	connect(MeshGUI, SIGNAL(triggered()), this, SLOT(MeshGUITrigger()));
 
-	conf = new Config;
-	editorUI = new myUI(conf, tabEditor, ui->treeView, textBrowser,
-		&initWin);
+//	conf = new Config;
+//	editorUI = new myUI(conf, tabEditor, ui->treeView, textBrowser,
+//		&initWin);
      //  add the frame for the group and program widget
      ui->FolderWindow->setStyleSheet( "border: 1px solid black;" );
      ui->treeView->setStyleSheet("border-bottom:0px ; border-top: 0px;");
@@ -93,8 +96,7 @@ MainWindow::MainWindow( QWidget *parent ) :QMainWindow(parent),
      Program->addAction( FindFile ) ;
 
      //  add the editor tool bar
-     editorToolBar = new QToolBar( "EditorToolBar" ) ;
-     //  add the new file
+  /*   //  add the new file
      newfile = new QAction( "newfile", editorToolBar ) ;
      newfile->setIcon( QIcon(":/Resource/512_512/newfile.png" )) ;
      editorToolBar->addAction( newfile ) ;
@@ -103,7 +105,26 @@ MainWindow::MainWindow( QWidget *parent ) :QMainWindow(parent),
      save->setIcon( QIcon(":/Resource/512_512/save.png" )) ;
      editorToolBar->addAction( save ) ;
      //  add the editor toolbar to the mainwindow
-     addToolBar( editorToolBar ) ;
+     addToolBar( editorToolBar ) ;*/
+
+	 //  build the editor toolbar
+	 editorToolBar = new QToolBar("Editor Tool Bar");
+	 addToolBar(editorToolBar);
+
+	 FileToolBar = new QToolBar("File Tool Bar");
+	 newNumber = 0;
+	 //  add the new file
+	 newfile = new QAction("newfile", FileToolBar);
+	 newfile->setIcon(QIcon(":/Resource/512_512/newfile.png"));
+	 FileToolBar->addAction(newfile);
+	 //  add the save 
+	 savetrigger = new QAction("Save", FileToolBar);
+	 savetrigger->setIcon(QIcon(":/Resource/512_512/save.png"));
+	 FileToolBar->addAction(savetrigger);
+	 connect(savetrigger, SIGNAL(triggered()), this, SLOT(Save()));
+	 connect(newfile, SIGNAL(triggered()), this, SLOT(newFile()));
+	 addToolBar(FileToolBar);
+	 codeEditor = new FoamEditor(this);
       
 
     //  The File Menu
@@ -124,7 +145,8 @@ MainWindow::MainWindow( QWidget *parent ) :QMainWindow(parent),
     textBrowserMark = 0;
     connect(ui->FolderView, SIGNAL(clicked()), this, SLOT(ShowTreeView()));
     connect(ui->Output, SIGNAL(clicked()), this, SLOT(ShowTextBrowser()));
-
+    connect(ui->actionYPlus_Estimate, SIGNAL( triggered() ),
+	        this, SLOT(yPlusEstimate()));
 
 }
 
@@ -143,9 +165,9 @@ MainWindow::~MainWindow()
     delete FindFile;
     delete Program ;
     //  delete the editor toolbar
-    delete newfile;
-    delete save ;
-    delete editorToolBar;
+    //delete newfile;
+    //delete save ;
+    //delete editorToolBar;
     //  delete the mainToolBar
     deleteMainToolBar() ;
 	delete RunModel;
@@ -257,7 +279,7 @@ void MainWindow::OpenFileEditorTrigger()
 	QFileInfo FileInfo(FileName);
 	if (FileInfo.isFile())
 	{
-		editorUI->openFile(FileName);
+		OpenFile(FileName);
 		if( tabEditor->isHidden())
 		    tabEditor->show();
 	}
@@ -340,4 +362,154 @@ void MainWindow::DockWidgetAndToolBarState()
 	}
 }
 
+void MainWindow::yPlusEstimate( )
+{
+	system("calculator.exe");
+}
+
+void MainWindow::MeshGUITrigger()
+{
+	
+	Meshgui.show();
+}
+
+//-----------------------------the code editor------------------------------
+
+void MainWindow::newFile( )
+{
+	QString fileName = tr("*united.txt %1").arg(++newNumber);
+	openedFiles << fileName;
+	int current = tabEditor->addTab(codeEditor->newEditor(), fileName);
+	tabEditor->setCurrentIndex(current);
+}
+bool MainWindow::Save()
+{
+	int index = tabEditor->currentIndex();
+	curFile = openedFiles.at(index);
+	cout << curFile.toLocal8Bit().data() << endl;
+	if (!curFile.contains("/") && !curFile.contains("\\")) {
+		return saveAs();
+	}
+	else {
+	    return saveFile(curFile);
+	}
+}
+bool MainWindow::saveFile(const QString &fileName)
+{
+	QFile file(fileName);
+	if (!file.open(QFile::WriteOnly)) {
+		QMessageBox::warning(this, tr("Application"),
+			tr("Cannot write file %1:\n%2.")
+			.arg(fileName)
+			.arg(file.errorString()));
+		return false;
+	}
+
+	QTextStream out(&file);
+	QApplication::setOverrideCursor(Qt::WaitCursor);
+	out << codeEditor->textEdit->text();
+	QApplication::restoreOverrideCursor();
+
+	setCurrentFile(fileName);
+	statusBar()->showMessage(tr("File saved"), 2000);
+	return true;
+}
+
+bool MainWindow::saveAs()
+{
+	QString fileName = QFileDialog::getSaveFileName(this,
+		tr("save as"),QString(),tr("Plain text Files(*.cpp, *.c);; All Files(*)"));
+	if (fileName.isEmpty())
+		return false;
+	int index = tabEditor->currentIndex();
+	openedFiles.replace(index, fileName);
+	return saveFile(fileName);
+}
+void MainWindow::setCurrentFile(const QString &fileName)
+{
+	curFile = fileName;
+	codeEditor->textEdit->setModified(false);
+	setWindowModified(false);
+
+	QString shownName;
+	if (curFile.isEmpty())
+		shownName = "untitled.txt";
+	else
+	{
+		shownName = strippedName(fileName);
+		int index = tabEditor->currentIndex();
+		tabEditor->setTabText(index, shownName);
+		tabEditor->setCurrentIndex(index);
+	}
+
+}
+QString MainWindow::strippedName(const QString &fullFileName)
+{
+	return QFileInfo(fullFileName).fileName();
+}
+
+void MainWindow::fileClose(int index)
+{
+	{
+		bool mark = maybeSave(index);
+#if _DEBUG
+		printf("\nThis a information for developer\n\n");
+		printf("In myui.cpp, the fileClose maybeSave function\n");
+		printf("The close index = %d\n", index);
+		printf("the files count = 1\n");
+		if (mark)
+			printf("The bool value is 1\n\n");
+		else
+			printf("The bool value is 0\n\n");
+		printf("Debug Exit\n");
+#endif
+		if (mark)
+		{
+			if (openedFiles.count() == 1)
+			{
+				openedFiles.removeAt(0);
+				tabEditor->removeTab(0);
+			}
+			else
+			{
+#if _DEBUG
+				printf("\nThis ia a information for developer\n\n");
+				printf("In muui.cpp, the fileClose function\n");
+				printf("the close index =%d\n", index);
+				printf("the files count =%d\n\n", openedFiles.count());
+				printf("Debug Exit\n");
+#endif
+				openedFiles.removeAt(index);
+				tabEditor->removeTab(index);
+			}
+		}
+	}
+}
+bool MainWindow::maybeSave( int index)
+{
+	QsciScintilla *text = EDITOR;
+	QString fileName = openedFiles.at(index);
+	if (text->isModified()) {
+		int ret = QMessageBox::warning(this, tr("Application"),
+			tr("The document has been modified.\n"
+				"Do you want to save your changes?"),
+			QMessageBox::Yes | QMessageBox::Default,
+			QMessageBox::No,
+			QMessageBox::Cancel | QMessageBox::Escape);
+		if (ret == QMessageBox::Yes)
+			return Save();
+		else if (ret == QMessageBox::Cancel)
+			return false;
+	}
+	return true;
+}
+
+void MainWindow::OpenFile(QString fileName)
+{
+	openedFiles << fileName;
+	codeEditor->newTab(tabEditor, fileName);
+	int current = tabEditor->currentIndex();
+    tabEditor->setCurrentIndex(current);
+	tabEditor->setCurrentWidget(codeEditor->newEditor());
+}
 

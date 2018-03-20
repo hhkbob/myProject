@@ -33,7 +33,7 @@ CopyRight:
 #include <windows.h>
 #endif
 
-#define EDITOR   static_cast<CodeEditor *>(tabWidget->currentWidget())
+//#define EDITOR   static_cast<CodeEditor *>(tabWidget->currentWidget())
 using namespace std ;
 
 class CFDbetaEditorAction : public QWidget
