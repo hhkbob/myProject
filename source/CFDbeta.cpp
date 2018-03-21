@@ -57,87 +57,70 @@ MainWindow::MainWindow( QWidget *parent ) :QMainWindow(parent),
     connect( ui->lineCommand,SIGNAL( returnPressed() ), 
              this, SLOT( LineEditRun( ) ) );
 	
-	textBrowser = new QTextBrowser;
-	EditorTab = new TabWidget;
-	tabEditor = ui->EditorManager->EditorWidget;
-	tabEditor->setTabsClosable(true);
-	connect(tabEditor, SIGNAL(tabCloseRequested(int)), this, SLOT(fileClose(int)));
+    textBrowser = new QTextBrowser;
+    EditorTab = new TabWidget;
+    tabEditor = ui->EditorManager->EditorWidget;
+    tabEditor->setTabsClosable(true);
+    connect(tabEditor, SIGNAL(tabCloseRequested(int)), this, SLOT(fileClose(int)));
 	
 
-	//  add the Mesh GUI
-	QAction *MeshGUI = new QAction("Mesh Gui", ui->menuMesh_M);
-	ui->menuMesh_M->addAction(MeshGUI);
-	connect(MeshGUI, SIGNAL(triggered()), this, SLOT(MeshGUITrigger()));
-
-//	conf = new Config;
-//	editorUI = new myUI(conf, tabEditor, ui->treeView, textBrowser,
-//		&initWin);
-     //  add the frame for the group and program widget
-     ui->FolderWindow->setStyleSheet( "border: 1px solid black;" );
-     ui->treeView->setStyleSheet("border-bottom:0px ; border-top: 0px;");
-     ui->lineCommand->setStyleSheet("border-top: 1px solid black;");
-     ui->groupBox->setStyleSheet("border-bottom: 0px; border-right: 0px;\
+    //  add the Mesh GUI
+    QAction *MeshGUI = new QAction("Mesh Gui", ui->menuMesh_M);
+    ui->menuMesh_M->addAction(MeshGUI);
+    connect(MeshGUI, SIGNAL(triggered()), this, SLOT(MeshGUITrigger()));
+	   
+    //  add the frame for the group and program widget
+    ui->FolderWindow->setStyleSheet( "border: 1px solid black;" );
+    ui->treeView->setStyleSheet("border-bottom:0px ; border-top: 0px;");
+    ui->lineCommand->setStyleSheet("border-top: 1px solid black;");
+    ui->groupBox->setStyleSheet("border-bottom: 0px; border-right: 0px;\
                                   border-left: 0px;");
-     textBrowser->setStyleSheet("border-top: 0px; border-bottom: 0px;" );
+    textBrowser->setStyleSheet("border-top: 0px; border-bottom: 0px;" );
 
-	 //  add the mainToolBar
-	 buildMainToolBar(  ) ;
+    //  add the mainToolBar
+    buildMainToolBar(  ) ;
 
-     //  add the toolbar to the CurrentFolderGroup
-     Program = new QToolBar ;
-     //  choose the Folder
-     main = new QAction("main", Program ) ;
-     main->setIcon( QIcon(":/Resource/256_256/main.png" ) ) ;
-     main->setToolTip("The main folder" ) ;
-     Program->addAction( main ) ;
-     Program->setStyleSheet("border: 0px;" ) ;
-     ui->ProgramToolLayout->addWidget( Program ) ;
-	 connect(main, SIGNAL(triggered()), this, SLOT(ReturnMainPath()));
-     //  aad Find file
-     FindFile = new QAction( "Find", Program ) ;
-     FindFile->setIcon( QIcon(":/Resource/256_256/ssearch.png" )) ;
-     Program->addAction( FindFile ) ;
+    //  add the toolbar to the CurrentFolderGroup
+    Program = new QToolBar ;
+    //  choose the Folder
+    main = new QAction("main", Program ) ;
+    main->setIcon( QIcon(":/Resource/256_256/main.png" ) ) ;
+    main->setToolTip("The main folder" ) ;
+    Program->addAction( main ) ;
+    Program->setStyleSheet("border: 0px;" ) ;
+    ui->ProgramToolLayout->addWidget( Program ) ;
+    connect(main, SIGNAL(triggered()), this, SLOT(ReturnMainPath()));
+    //  aad Find file
+    FindFile = new QAction( "Find", Program ) ;
+    FindFile->setIcon( QIcon(":/Resource/256_256/ssearch.png" )) ;
+    Program->addAction( FindFile ) ;
 
-     //  add the editor tool bar
-  /*   //  add the new file
-     newfile = new QAction( "newfile", editorToolBar ) ;
-     newfile->setIcon( QIcon(":/Resource/512_512/newfile.png" )) ;
-     editorToolBar->addAction( newfile ) ;
-     //  add the save 
-     save = new QAction( "Save", editorToolBar) ;
-     save->setIcon( QIcon(":/Resource/512_512/save.png" )) ;
-     editorToolBar->addAction( save ) ;
-     //  add the editor toolbar to the mainwindow
-     addToolBar( editorToolBar ) ;*/
+    //  build the editor toolbar
+    editorToolBar = new QToolBar("Editor Tool Bar");
+    addToolBar(editorToolBar);
 
-	 //  build the editor toolbar
-	 editorToolBar = new QToolBar("Editor Tool Bar");
-	 addToolBar(editorToolBar);
-
-	 FileToolBar = new QToolBar("File Tool Bar");
-	 newNumber = 0;
-	 //  add the new file
-	 newfile = new QAction("newfile", FileToolBar);
-	 newfile->setIcon(QIcon(":/Resource/512_512/newfile.png"));
-	 FileToolBar->addAction(newfile);
-	 //  add the save 
-	 savetrigger = new QAction("Save", FileToolBar);
-	 savetrigger->setIcon(QIcon(":/Resource/512_512/save.png"));
-	 FileToolBar->addAction(savetrigger);
-	 connect(savetrigger, SIGNAL(triggered()), this, SLOT(Save()));
-	 connect(newfile, SIGNAL(triggered()), this, SLOT(newFile()));
-	 addToolBar(FileToolBar);
-	 codeEditor = new FoamEditor(this);
+    FileToolBar = new QToolBar("File Tool Bar");
+    newNumber = 0;
+    //  add the new file
+    newfile = new QAction("newfile", FileToolBar);
+    newfile->setIcon(QIcon(":/Resource/512_512/newfile.png"));
+    FileToolBar->addAction(newfile);
+    //  add the save 
+    savetrigger = new QAction("Save", FileToolBar);
+    savetrigger->setIcon(QIcon(":/Resource/512_512/save.png"));
+    FileToolBar->addAction(savetrigger);
+    connect(savetrigger, SIGNAL(triggered()), this, SLOT(Save()));
+    connect(newfile, SIGNAL(triggered()), this, SLOT(newFile()));
+    addToolBar(FileToolBar);
+    codeEditor = new FoamEditor(this);
       
-
     //  The File Menu
     connect(ui->Image_FIle, SIGNAL(triggered()), this, SLOT(OpenFileImageTrigger()));
-    connect(ui->Editor_File, SIGNAL(triggered()), this, SLOT(OpenFileEditorTrigger()));
-	
+    connect(ui->Editor_File, SIGNAL(triggered()), this, SLOT(OpenFileEditorTrigger()));	
     vtkView.buildRecentFilesMenu( *ui->menuRecents);
 
-	//  The Mesh Function
-	buildMeshFunction();
+    //  The Mesh Function
+    buildMeshFunction();
 	 
     //  the toolbar ui
     editorToolBar->setStyleSheet("background-color:rgb(240, 240, 240); ");
@@ -150,30 +133,24 @@ MainWindow::MainWindow( QWidget *parent ) :QMainWindow(parent),
     connect(ui->Output, SIGNAL(clicked()), this, SLOT(ShowTextBrowser()));
     connect(ui->actionYPlus_Estimate, SIGNAL( triggered() ),
 	        this, SLOT(yPlusEstimate()));
-
 }
 
 MainWindow::~MainWindow()
 {
-  //  note: delete the point step by step, follow the order
-	delete ui;
-	delete labelStatusBar;
-	delete TreeViewMenu;
-	delete OpenFileOuterAction; delete item;
-	delete model; 
-	delete textBrowser;
-	delete tabEditor;
+    //  note: delete the point step by step, follow the order
+    delete ui;
+    delete labelStatusBar;
+    delete TreeViewMenu;
+    delete OpenFileOuterAction; delete item;
+    delete model; 
+    delete textBrowser;
+    elete tabEditor;
     //  delete the Program bar
     delete main;
     delete FindFile;
     delete Program ;
-    //  delete the editor toolbar
-    //delete newfile;
-    //delete save ;
-    //delete editorToolBar;
-    //  delete the mainToolBar
     deleteMainToolBar() ;
-	delete RunModel;
+    delete RunModel;
 
         
 	
@@ -181,9 +158,6 @@ MainWindow::~MainWindow()
 
 int MainWindow::initTabAndQVTKWidget( )
 {
-    //tabEditor->setMovable(true);
-	//tabEditor->setContextMenuPolicy(Qt::CustomContextMenu);
-	//tabEditor->setTabsClosable(true);
 	return 1 ;
 }
 
@@ -201,30 +175,30 @@ void MainWindow::LineEditRun( )
    }
    if (k == strlen(path))
    {
-	   //  refresh the dir
-	   //  get the path directory
-	   char GetPath[200];
-	   int mark = 0;
-	   for (int i = 3; i < strlen(command.toLocal8Bit().data()); i++)
-	   {
-		   if (command.toLocal8Bit().data()[i] == ' ' && mark == 0)
-			   continue;
-		   else
-		   {
-			   GetPath[mark] = command.toLocal8Bit().data()[i];
-			   mark++;
-		   }
-	   }
-	   GetPath[mark] = '\0';
+        //  refresh the dir
+	//  get the path directory
+	char GetPath[200];
+	int mark = 0;
+	for (int i = 3; i < strlen(command.toLocal8Bit().data()); i++)
+	{
+	     if (command.toLocal8Bit().data()[i] == ' ' && mark == 0)
+	         continue;
+	     else
+	     {
+		  GetPath[mark] = command.toLocal8Bit().data()[i];
+		   mark++;
+	      }
+	 }
+	 GetPath[mark] = '\0';
 
-	   QFileInfo tmpFileInfo(GetPath);
-	   if (tmpFileInfo.isDir())
-	   {
-		   CFDbetaTreeView TreeViewDir(model, item);
-		   CurrentPath = initWin.CPathToQtPath(GetPath);
-		   TreeViewDir.initTheModel(ui->treeView, CurrentPath);
-		   Watcher.addPath(CurrentPath);
-	   }
+	 QFileInfo tmpFileInfo(GetPath);
+	 if (tmpFileInfo.isDir())
+	 {
+	       CFDbetaTreeView TreeViewDir(model, item);
+	       CurrentPath = initWin.CPathToQtPath(GetPath);
+	       TreeViewDir.initTheModel(ui->treeView, CurrentPath);
+	       Watcher.addPath(CurrentPath);
+	 }
 	   else
 	   {
 #ifdef _DEBUG
