@@ -354,7 +354,7 @@ void MainWindow::MeshGUITrigger()
 
 void MainWindow::newFile( )
 {
-	QString fileName = tr("*united.txt %1").arg(++newNumber);
+	QString fileName = tr("united%1.txt").arg(++newNumber);
 	openedFiles << fileName;
 	int current = tabEditor->addTab(codeEditor->newEditor(), fileName);
 	tabEditor->setCurrentIndex(current);
@@ -364,7 +364,7 @@ bool MainWindow::Save()
 	int index = tabEditor->currentIndex();
 	curFile = openedFiles.at(index);
 	cout << curFile.toLocal8Bit().data() << endl;
-	if (!curFile.contains("/") && !curFile.contains("\\")) {
+	if (!curFile.contains("/") || !curFile.contains("\\")) {
 		return saveAs();
 	}
 	else {
@@ -395,7 +395,7 @@ bool MainWindow::saveFile(const QString &fileName)
 bool MainWindow::saveAs()
 {
 	QString fileName = QFileDialog::getSaveFileName(this,
-		tr("save as"),QString(),tr("Plain text Files(*.cpp, *.c);; All Files(*)"));
+		tr("save as"),CurrentPath,tr("Plain text Files(*.cpp, *.c);; All Files(*)"));
 	if (fileName.isEmpty())
 		return false;
 	int index = tabEditor->currentIndex();
@@ -486,7 +486,7 @@ void MainWindow::OpenFile(QString fileName)
 	openedFiles << fileName;
 	codeEditor->newTab(tabEditor, fileName);
 	int current = tabEditor->currentIndex();
-    tabEditor->setCurrentIndex(current);
+        tabEditor->setCurrentIndex(current);
 	tabEditor->setCurrentWidget(codeEditor->newEditor());
 }
 
@@ -536,6 +536,10 @@ void MainWindow::dropEvent(QDropEvent* evt)
 
 void MainWindow::ReturnMainPath()
 {
-
+    //  return current path
+    char path[200];
+    strcpy( path, "cd " ) ;
+    strcat( path, CurrentPath.toLocal8Bit().data() ) ;
+    dirChange( path ) ;
 }
 
