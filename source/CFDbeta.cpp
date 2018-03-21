@@ -30,6 +30,7 @@
 #include "QSplitter"
 #include "qtabwidget.h"
 
+
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -42,6 +43,7 @@ MainWindow::MainWindow( QWidget *parent ) :QMainWindow(parent),
    ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+	setAcceptDrops(true);
     //  define the platform
     RunningPlatForm = WINDOWRUNNING;
     initMainWindowAction( ) ;
@@ -90,6 +92,7 @@ MainWindow::MainWindow( QWidget *parent ) :QMainWindow(parent),
      Program->addAction( main ) ;
      Program->setStyleSheet("border: 0px;" ) ;
      ui->ProgramToolLayout->addWidget( Program ) ;
+	 connect(main, SIGNAL(triggered()), this, SLOT(ReturnMainPath()));
      //  aad Find file
      FindFile = new QAction( "Find", Program ) ;
      FindFile->setIcon( QIcon(":/Resource/256_256/ssearch.png" )) ;
@@ -511,5 +514,54 @@ void MainWindow::OpenFile(QString fileName)
 	int current = tabEditor->currentIndex();
     tabEditor->setCurrentIndex(current);
 	tabEditor->setCurrentWidget(codeEditor->newEditor());
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent* evt)
+{
+	evt->acceptProposedAction();
+}
+void MainWindow::dropEvent(QDropEvent* evt)
+{
+	QList<QUrl> urls = evt->mimeData()->urls();
+	if (urls.isEmpty())
+	{
+		return;
+	}
+
+	QList<QString> files;
+
+	foreach(QUrl url, urls)
+	{
+		if (!url.toLocalFile().isEmpty())
+		{
+			files.append(url.toLocalFile());
+		}
+	}
+
+	// If we have no file we return
+	if (files.empty() || files.first().isEmpty())
+	{
+		return;
+	}
+	
+	int num = files.size();
+	QString fileName;
+	for (int i = 0; i < num; i++)
+	{
+		fileName = files.at(i);
+		char f[20];
+		strcpy(f,fileName.section('.', -1).toLocal8Bit().data());
+		if (strlen(f) == 0 || !strcmp(f, "cpp")
+			|| !strcmp(f, "cxx") || !strcmp(f, "h")
+			|| !strcmp(f, "H") || !strcmp(f, "txt") || !strcmp(f, "c"))
+			OpenFile(fileName);
+		else
+			pqLoadDataReaction::loadData(files);
+	}
+}
+
+void MainWindow::ReturnMainPath()
+{
+
 }
 

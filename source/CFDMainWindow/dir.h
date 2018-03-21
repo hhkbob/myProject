@@ -295,7 +295,14 @@ void MainWindow::on_treeView_doubleClicked(const QModelIndex &index)
 		{
 			//editorUI->openFile(FileName);
 			//  OpenFile 
-			OpenFile(FileName);
+			char f[20];
+			QList<QString> files;
+			files.append(FileName);
+			strcpy(f, FileName.section('.', -1).toLocal8Bit().data());
+			if ( !strcmp(f,"foam") )
+				pqLoadDataReaction::loadData(files);
+			else
+				 OpenFile(FileName);
 			if( tabEditor->isHidden())
 				  tabEditor->show();				
 			//  change the StatusBar

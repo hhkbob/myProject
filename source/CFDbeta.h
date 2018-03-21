@@ -64,6 +64,10 @@
 #include <fstream>
 #include <qfile.h>
 #include <QTextStream>
+#include <QDropEvent>
+#include <QDragEnterEvent>
+#include <qmimedata.h>
+#include <QUrl>
 
 //#include "ToolBar/calculator.h"
 
@@ -167,6 +171,10 @@ public:
 	void setCurrentFile(const QString &fileName);
 	QString strippedName(const QString &fullFileName);
 	void OpenFile(QString filename);
+	
+protected:
+    void dropEvent(QDropEvent* evt);
+	void dragEnterEvent(QDragEnterEvent* evt);
 private slots:
  
 //  dir.h slots 
@@ -202,6 +210,8 @@ private slots:
 	bool saveAs();
 	void fileClose(int);
 	bool maybeSave(int index);
+	void ReturnMainPath();
+	
 	
 
 private:
