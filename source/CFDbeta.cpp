@@ -144,7 +144,7 @@ MainWindow::~MainWindow()
     delete OpenFileOuterAction; delete item;
     delete model; 
     delete textBrowser;
-    elete tabEditor;
+    delete tabEditor;
     //  delete the Program bar
     delete main;
     delete FindFile;
