@@ -1,2 +1,2 @@
 # myProject
-use the vtk file and QSCALLIa, the paraview to build the project
+use the vK file and QSCALLIa, the PA to build the project
