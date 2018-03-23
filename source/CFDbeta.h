@@ -102,6 +102,7 @@ public:
 	//  the editor outter path
 	char Notepad[ 200 ];
 	TabWidget *EditorTab;
+	
 
 
 	//myUI *editorUI;
@@ -211,6 +212,8 @@ private slots:
 	void fileClose(int);
 	bool maybeSave(int index);
 	void ReturnMainPath();
+	void currentChanged(int);
+	void modificationChanged(bool);
 	
 	
 

@@ -62,6 +62,7 @@ MainWindow::MainWindow( QWidget *parent ) :QMainWindow(parent),
     tabEditor = ui->EditorManager->EditorWidget;
     tabEditor->setTabsClosable(true);
     connect(tabEditor, SIGNAL(tabCloseRequested(int)), this, SLOT(fileClose(int)));
+	connect(tabEditor, SIGNAL(currentChanged(int)), this, SLOT(currentChanged(int)));
 	
 
     //  add the Mesh GUI
@@ -354,7 +355,7 @@ void MainWindow::MeshGUITrigger()
 
 void MainWindow::newFile( )
 {
-	QString fileName = tr("united%1.txt").arg(++newNumber);
+	QString fileName = tr("united%1.txt*").arg(++newNumber);
 	openedFiles << fileName;
 	int current = tabEditor->addTab(codeEditor->newEditor(), fileName);
 	tabEditor->setCurrentIndex(current);
@@ -364,7 +365,7 @@ bool MainWindow::Save()
 	int index = tabEditor->currentIndex();
 	curFile = openedFiles.at(index);
 	cout << curFile.toLocal8Bit().data() << endl;
-	if (!curFile.contains("/") || !curFile.contains("\\")) {
+	if (!curFile.contains("/") || curFile.contains("\\")) {
 		return saveAs();
 	}
 	else {
@@ -382,9 +383,14 @@ bool MainWindow::saveFile(const QString &fileName)
 		return false;
 	}
 
+	//  get the current editor widget
+	QsciScintilla *text;
+	text = EDITOR;
 	QTextStream out(&file);
 	QApplication::setOverrideCursor(Qt::WaitCursor);
-	out << codeEditor->textEdit->text();
+	out << text->text();
+	out.flush();
+	file.close();
 	QApplication::restoreOverrideCursor();
 
 	setCurrentFile(fileName);
@@ -395,7 +401,7 @@ bool MainWindow::saveFile(const QString &fileName)
 bool MainWindow::saveAs()
 {
 	QString fileName = QFileDialog::getSaveFileName(this,
-		tr("save as"),CurrentPath,tr("Plain text Files(*.cpp, *.c);; All Files(*)"));
+		tr("save as"),CurrentPath,tr("Plain text Files(*.cpp *.c *cxx *h *H *C);; All Files(*)"));
 	if (fileName.isEmpty())
 		return false;
 	int index = tabEditor->currentIndex();
@@ -464,9 +470,8 @@ void MainWindow::fileClose(int index)
 }
 bool MainWindow::maybeSave( int index)
 {
-	QsciScintilla *text = EDITOR;
-	QString fileName = openedFiles.at(index);
-	if (text->isModified()) {
+	QString str = tabEditor->tabText(tabEditor->currentIndex());
+	if (str.contains("*")) {
 		int ret = QMessageBox::warning(this, tr("Application"),
 			tr("The document has been modified.\n"
 				"Do you want to save your changes?"),
@@ -483,12 +488,50 @@ bool MainWindow::maybeSave( int index)
 
 void MainWindow::OpenFile(QString fileName)
 {
+	//  test the file 
+	for (int i = 0; i < openedFiles.count(); i++)
+	{
+		if (openedFiles.at(i) == fileName )
+		{
+			tabEditor->setCurrentIndex(i);
+			return;
+		}
+	}
+	newNumber++;
 	openedFiles << fileName;
 	codeEditor->newTab(tabEditor, fileName);
-	int current = tabEditor->currentIndex();
-        tabEditor->setCurrentIndex(current);
-	tabEditor->setCurrentWidget(codeEditor->newEditor());
+	//int current = tabEditor->currentIndex();
+     //   tabEditor->setCurrentIndex(current);
+	tabEditor->setCurrentWidget(codeEditor->textEdit);
 }
+
+void MainWindow::currentChanged(int index)
+{
+	cout << openedFiles.count() << endl;
+	if (index == -1)
+	{
+		newNumber = 0;
+		return;
+	}
+    connect(EDITOR, SIGNAL(modificationChanged(bool)), SLOT(modificationChanged(bool)), Qt::UniqueConnection);
+}
+
+void MainWindow::modificationChanged(bool changed)
+{
+	QString str = tabEditor->tabText(tabEditor->currentIndex());
+	if (str[str.length() - 1] == '*')
+	{
+		if (!changed)
+			str.resize(str.length() - 1);
+	}
+	else if (changed)
+	{
+		str += '*';
+	}
+	tabEditor->setTabText(tabEditor->currentIndex(), str);
+}
+
+//=======================================window event==========
 
 void MainWindow::dragEnterEvent(QDragEnterEvent* evt)
 {
@@ -538,8 +581,10 @@ void MainWindow::ReturnMainPath()
 {
     //  return current path
     char path[200];
+	CurrentPath = "E:/";
     strcpy( path, "cd " ) ;
     strcat( path, CurrentPath.toLocal8Bit().data() ) ;
-    dirChange( path ) ;
+	dirRefresh();
 }
+
 

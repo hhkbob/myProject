@@ -350,6 +350,7 @@ void MainWindow::dirRefresh()
     
 	CFDbetaTreeView TreeView( model, item );
 	TreeView.initTheModel(ui->treeView, CurrentPath);
+	Watcher.addPath(CurrentPath);
 }
 void MainWindow::dirNewFile()
 {
