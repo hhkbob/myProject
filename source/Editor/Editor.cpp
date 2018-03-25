@@ -43,6 +43,15 @@ void FoamEditor::newTab(QTabWidget *tab, QString fileName)
 QsciScintilla *FoamEditor::newEditor()
 {
 	textEdit = new QsciScintilla;
+
+	//  setup the calltips
+	textEdit->setCallTipsStyle(QsciScintilla::CallTipsNoContext);
+	textEdit->setCallTipsVisible(0);
+	textEdit->setCallTipsPosition(QsciScintilla::CallTipsBelowText);
+	textEdit->setCallTipsBackgroundColor(QColor(0xff, 0xff, 0xff, 0xff));
+	textEdit->setCallTipsForegroundColor(QColor(0x00, 0x50, 0x00, 0xff));
+	textEdit->setCallTipsHighlightColor(QColor(0x00, 0x00, 0xff, 0xff));
+
 	QFont font2("Courier New");
 	font2.setPointSize(10);
 	textEdit->setFont(font2);
@@ -79,17 +88,59 @@ QsciScintilla *FoamEditor::newEditor()
 
 	textEdit->setLexer(textLexer);
 
+	//  current line color
+	textEdit->setCaretLineVisible(true);
+	textEdit->setCaretLineBackgroundColor(QColor(232,232,255));
+	textEdit->setCaretForegroundColor(QColor("grayd"));
 
+	//  marker
+	textEdit->markerDefine(QsciScintilla::Minus, QsciScintilla::SC_MARKNUM_FOLDEROPEN);
+	textEdit->markerDefine(QsciScintilla::Plus, QsciScintilla::SC_MARKNUM_FOLDER);
+	textEdit->markerDefine(QsciScintilla::Minus, QsciScintilla::SC_MARKNUM_FOLDEROPENMID);
+	textEdit->markerDefine(QsciScintilla::Plus, QsciScintilla::SC_MARKNUM_FOLDEREND);
+
+	//  whitespace
+	textEdit->setWhitespaceVisibility(QsciScintilla::WsInvisible);
+	textEdit->setWhitespaceSize(2);
+
+	//  set the margin
 	QFont font("Courier New");
 	font.setPointSize(10);
 	textEdit->setMarginType(0, QsciScintilla::NumberMargin);
 	textEdit->setMarginLineNumbers(0, true);
 	textEdit->setMarginWidth(0, 20);
 	textEdit->setMarginsFont(font);
+	textEdit->setMarginSensitivity(0, true);
+
+	//  folder code
+	QString fold = "1";
+	QVariant variant = fold;
+	textLexer->setProperty("fold", variant);
+	textEdit->markerDefine(QsciScintilla::SC_MARKNUM_FOLDER, QsciScintilla::SC_MARK_CIRCLEPLUS);
+	textEdit->markerDefine(QsciScintilla::SC_MARKNUM_FOLDEROPEN, QsciScintilla::SC_MARK_CIRCLEMINUS);
+	textEdit->markerDefine(QsciScintilla::SC_MARKNUM_FOLDEREND, QsciScintilla::SC_MARK_CIRCLEPLUSCONNECTED);
+	textEdit->markerDefine(QsciScintilla::SC_MARKNUM_FOLDEROPENMID, QsciScintilla::SC_MARK_CIRCLEMINUSCONNECTED);
+	textEdit->markerDefine(QsciScintilla::SC_MARKNUM_FOLDERMIDTAIL, QsciScintilla::SC_MARK_TCORNERCURVE);
+	textEdit->markerDefine(QsciScintilla::SC_MARKNUM_FOLDERSUB, QsciScintilla::SC_MARK_VLINE);
+	textEdit->markerDefine(QsciScintilla::SC_MARKNUM_FOLDERTAIL, QsciScintilla::SC_MARK_LCORNERCURVE);
+
+	//  annotations
+	textEdit->setAnnotationDisplay(QsciScintilla::AnnotationStandard);
 
 	QsciAPIs *apis = new QsciAPIs(textLexer);
-	if (!apis->load(QString("api.ini")))
-		QMessageBox::warning(this, QString("Warning"), QString("load the api.ini faile"));
+	QList<QString> tips;
+	QList<int> shifts;
+	shifts.append(0);
+	char autocompletions[4][100] = {
+			"add( int arg1, int arg2 )",
+			"subtract(int arg_1, int arg_2)",
+			"function_one(int arg_1)",
+			"function_two(float arg_1)"
+	};
+	for( int i=0; i<4; i++ )
+	  apis->add(autocompletions[i]);
+	if (!apis->load(QString("api.ini")) && apis->load(QString("probes.txt")) )
+		QMessageBox::warning(this, QString("Warning"), QString("load the callTips faile"));
 	else
 		apis->prepare();
 
@@ -97,10 +148,6 @@ QsciScintilla *FoamEditor::newEditor()
 	textEdit->setAutoCompletionCaseSensitivity(true);
 	textEdit->setAutoCompletionThreshold(1);
 
-	textEdit->setMarginType(3, QsciScintilla::SymbolMargin);
-	textEdit->setMarginLineNumbers(3, false);
-	textEdit->setMarginWidth(3, 15);
-	textEdit->setMarginSensitivity(3, true);
 
 	return textEdit;
 }

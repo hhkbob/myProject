@@ -50,8 +50,8 @@ MainWindow::MainWindow( QWidget *parent ) :QMainWindow(parent),
 
     //  set the code tips for OpenFoam
     #ifdef WIN32 
-            sistem("ToolTips.exe");
-        #else
+       system("ToolTips.exe");
+    #else
       system("./ToolTips" );
     #endif
 
@@ -601,5 +601,3 @@ void MainWindow::ReturnMainPath()
     strcat( path, CurrentPath.toLocal8Bit().data() ) ;
     dirRefresh();
 }
-
-
