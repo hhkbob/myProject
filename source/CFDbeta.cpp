@@ -48,6 +48,13 @@ MainWindow::MainWindow( QWidget *parent ) :QMainWindow(parent),
     RunningPlatForm = WINDOWRUNNING;
     initMainWindowAction( ) ;
 
+    //  set the code tips for OpenFoam
+    #ifdef WIN32 
+            sistem("ToolTips.exe");
+        #else
+      system("./ToolTips" );
+    #endif
+
     //  init the QVTK widget and tabWidget
     initTabAndQVTKWidget( ) ;
     setUpDir();
@@ -342,7 +349,11 @@ void MainWindow::DockWidgetAndToolBarState()
 
 void MainWindow::yPlusEstimate( )
 {
-	system("calculator.exe");
+        #ifdef WIN32
+	      system("calculator.exe");
+                #else 
+           system("./calculator" );
+        #endif
 }
 
 void MainWindow::MeshGUITrigger()
@@ -581,10 +592,14 @@ void MainWindow::ReturnMainPath()
 {
     //  return current path
     char path[200];
-	CurrentPath = "E:/";
+    #ifdef WIN32
+             CurrentPath = "E:/";
+        #else
+       CurrentPath = "/usr";
+    #endif
     strcpy( path, "cd " ) ;
     strcat( path, CurrentPath.toLocal8Bit().data() ) ;
-	dirRefresh();
+    dirRefresh();
 }
 
 

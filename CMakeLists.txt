@@ -42,4 +42,5 @@ set( EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin )
 
 # add the subdirectory. Every directory should have the CmakeLists.txt
 add_subdirectory( source )
-add_subdirectory( Tools/yPlus )
+add_subdirectory( Tools/yplus )
+add_subdirectory( Tools/ToolTips )

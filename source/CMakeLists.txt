@@ -28,7 +28,10 @@ set( CMAKE_AUTORCC ON )
 
 find_package( ParaView REQUIRED )
 include( ${PARAVIEW_USE_FILE} )
-find_package( Qt5Widgets )
+pv_find_package_qt(qt_targets
+  QT4_COMPONENTS QtGui
+  QT5_COMPONENTS Widgets)
+
 find_path( QScintilla_DIR  QScintilla /../QScintilla )
 if( NOT QScintilla_DIR )
    message(FATAL_ERROR "QScintilla_DIR not found")
@@ -163,13 +166,19 @@ FILE( GLOB ToolBar
        ToolBar/mainToolBar.cpp
 	   ToolBar/mainToolBar.h
 	 )
-
-qt5_wrap_cpp(MOC_BUILT_SOURCES
+if (PARAVIEW_QT_VERSION VERSION_GREATER "4")
+  qt5_wrap_cpp(MOC_BUILT_SOURCES
     ${SOURCE_FILES})
-qt5_wrap_ui(UI_BUILT_SOURCES
+  qt5_wrap_ui(UI_BUILT_SOURCES
     ${UI_FILES})
-qt5_add_resources( res images.qrc )
-
+  qt5_add_resources( res images.qrc )
+else()
+  qt4_wrap_cpp(MOC_BUILT_SOURCES
+    ${SOURCE_FILES})
+  qt4_wrap_ui(UI_BUILT_SOURCES
+    ${UI_FILES})
+  qt4_add_resources( res images.qrc )
+endif()
 
 
 source_group( "initwindow" FILES ${initwindow} )	
@@ -202,5 +211,23 @@ endif()
 target_link_libraries(FlowCD LINK_PRIVATE ${qt_targets})
 #target_link_libraries( FlowCD Qt5::Gui Qt5::Core Qt5::Widgets)
 target_link_libraries( FlowCD ${VTK_LIBRARIES} )  
-target_link_libraries( FlowCD ${QScintilla_DIR}/lib/qscintilla2_qt5d.lib )  
- target_link_libraries( FlowCD ${QScintilla_DIR}/lib/qscintilla2_qt5.lib )                                             
+if(WIN32)
+  if (PARAVIEW_QT_VERSION VERSION_GREATER "4")
+    target_link_libraries( FlowCD ${QScintilla_DIR}/lib/qscintilla2_qt5d.lib )  
+    target_link_libraries( FlowCD ${QScintilla_DIR}/lib/qscintilla2_qt5.lib ) 
+  else()
+    target_link_libraries( FlowCD ${QScintilla_DIR}/lib/qscintilla2_qt4d.lib )  
+    target_link_libraries( FlowCD ${QScintilla_DIR}/lib/qscintilla2_qt4.lib ) 
+  endif()
+else()
+  if (PARAVIEW_QT_VERSION VERSION_GREATER "4")
+    target_link_libraries( FlowCD ${QScintilla_DIR}/lib/libqscintilla2_qt5.so)  
+    target_link_libraries( FlowCD ${QScintilla_DIR}/lib/Release/libqscintilla2_qt5.so ) 
+  else()
+    target_link_libraries( FlowCD ${QScintilla_DIR}/lib/libqscintilla2_qt4.so)  
+    target_link_libraries( FlowCD ${QScintilla_DIR}/lib/Release/libqscintilla2_qt4.so )  
+  endif()
+endif() 
+
+
+                                            
